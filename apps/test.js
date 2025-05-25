@@ -1,6 +1,8 @@
+
 function testmake(dataset) {
-    let a = d3.select("svg")
-        .append("rect")
+    let a = d3.select("svg").append("g")
+
+    a.append("rect")
         .attr("x", dataset[0])
         .attr("y", dataset[1])
         .attr("width", dataset[2])
