@@ -1,8 +1,12 @@
-const testbox = d3.select("svg")
-    .append("rect")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("width", 500)
-        .attr("height", 600)
+function testmake(dataset) {
+    let a = d3.select("svg")
+        .append("rect")
+        .attr("x", dataset[0])
+        .attr("y", dataset[1])
+        .attr("width", dataset[2])
+        .attr("height", dataset[3])
+    console.log(a)
+    return a
+}
 
-export default testbox;
+export default testmake;
