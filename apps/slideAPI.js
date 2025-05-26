@@ -36,8 +36,6 @@ class Slider {
      * @returns {Number} 0 or -1, depending on success
      */
     new(gArray) {
-        console.log(gArray)
-        console.log(gArray[0].node().nodeName)
         if (!(gArray.reduce((acc, elem) => ((elem.node().nodeName === "g") && acc), true))) {
             console.error(`Invalid element type in slider array. Expected all \'g\' elements`);
             this.#slides = null;
