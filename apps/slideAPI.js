@@ -1,10 +1,12 @@
 // hehehaha
+import Slide from "./slides/slideTemplate.js"
 
 /**
  * Class that defines a slideshow. Must be created with a constructor.
  */
 class Slider {
 
+    /** @type {Slide[]} */
     #slides = null;
     #length = null;
     #index = null;
@@ -15,28 +17,29 @@ class Slider {
     #rightSlideX = 0;
 
     /**
-     * Constructs a new Slider object with the given parameters.
-     * @param {Array} gArray - Defines an array of 'g' elements to be shown as slides, in order
+     * Constructs a {@link Slider} object with the given parameters.
+     * @param {Slide[]} slideArray - Defines an array of {@link Slide} objects to be shown as slides, in order
      * @param {Number} transitionDuration - Defines the time for each slide transition in milliseconds (ms)
-     * @param {Array} boundaryArray - Defines an Array(3) of x positions as numbers, where: 
+     * @param {Number[]} boundaryArray - Defines an Array(3) of x positions as numbers, where: 
      *  - The first index specifies the x position of previous slides. Typically = -width.
      *  - The second index specifies the x position of the current slide. Typically = 0.
      *  - The third index specifices the x position of next slides. Typically = width.
      */
-    constructor(gArray, transitionDuration, boundaryArray) {
-        this.new(gArray), this.#valid = true;
-        this.setTransitionDuration(transitionDuration);
-        this.setSlideBoundaries(boundaryArray);
-        this.#refreshSlides();
+    constructor(slideArray, transitionDuration, boundaryArray) {
+        if (this.new(slideArray) == -1 ||
+            this.setTransitionDuration(transitionDuration) ||
+            this.setSlideBoundaries(boundaryArray) ||
+            this.#refreshSlides())
+                console.error("Failed making Slider. Exiting Slider constructor.");
     }
 
     /**
-     * Updates the Slider object's slides with a new array of 'g' elements, in order.
-     * @param {Array} gArray - Defines an array of 'g' elements to be shown as slides, in order
+     * Updates the {@link Slider} object's slides with a new array of {@link Slide} objects, in order.
+     * @param {Array} slideArray - Defines an array of {@link Slide} objects to be shown as slides, in order
      * @returns {Number} 0 or -1, depending on success
      */
-    new(gArray) {
-        if (!(gArray.reduce((acc, elem) => ((elem.node().nodeName === "g") && acc), true))) {
+    new(slideArray) {
+        if (!(slideArray.reduce((acc, slide) => ((slide instanceof Slide) && acc), true))){
             console.error(`Invalid element type in slider array. Expected all \'g\' elements`);
             this.#slides = null;
             this.on = null;
@@ -44,15 +47,15 @@ class Slider {
             this.#valid = false;
             return -1;
         }
-        this.#slides = gArray;
-        this.#length = gArray.length;
+        this.#slides = slideArray;
+        this.#length = slideArray.length;
         this.#index = 0;
         this.#valid = true;
         return 0;
     }
 
     /**
-     * Updates the Slider object's transition time.
+     * Updates the {@link Slider} object's transition time.
      * @param {Number} newTime - Defines the time for each slide transition in milliseconds (ms)
      * @returns {Number} 0 or -1, depending on success
      */
@@ -70,7 +73,7 @@ class Slider {
     }
 
     /**
-     * Updates the Slider object's assigned slide x positions.
+     * Updates the {@link Slider} object's assigned slide x positions.
      * @param {Array} boundaryArray - Defines an Array(3) of x positions as numbers, where: 
      *  - The first index specifies the x position of previous slides. Typically = -width.
      *  - The second index specifies the x position of the current slide. Typically = 0.
@@ -98,8 +101,8 @@ class Slider {
             console.error(`Tried to illegally decrement slides index out of bounds: ${this.#index} -> ${this.#index - 1}`);
             return -1;
         }
-        let curr = this.#slides[this.#index];
-        let prev = this.#slides[this.#index - 1];
+        let curr = this.#slides[this.#index].base;
+        let prev = this.#slides[this.#index - 1].base;
         curr.transition()
             .duration(this.#transTime)
             .attr("transform",  `translate(${this.#rightSlideX}, 0)`)
@@ -126,8 +129,8 @@ class Slider {
             console.error(`Tried to illegally increment slides index out of bounds: ${this.#index} -> ${this.#index + 1}`);
             return -1;
         }
-        let curr = this.#slides[this.#index];
-        let next = this.#slides[this.#index + 1];
+        let curr = this.#slides[this.#index].base;
+        let next = this.#slides[this.#index + 1].base;
         curr.transition()
             .duration(this.#transTime)
             .attr("transform",  `translate(${this.#leftSlideX}, 0)`)
@@ -150,16 +153,16 @@ class Slider {
      */
     #refreshSlides() {
         if (!this.#checkValidity()) return -1;
-        this.#slides.forEach((elem, i) => {
+        this.#slides.forEach((slide, i) => {
             if (i == this.#index) {
-                elem.attr("visibility", `visible`)
+                slide.base.attr("visibility", `visible`)
                     .attr("transform", `translate(${this.#centerSlideX}, 0)`);
             } else {
                 if (i < this.#index) {
-                    elem.attr("visibility", `collapse`)
+                    slide.base.attr("visibility", `collapse`)
                         .attr("transform", `translate(${this.#leftSlideX}, 0)`);
                 } else {
-                    elem.attr("visibility", `collapse`)
+                    slide.base.attr("visibility", `collapse`)
                         .attr("transform", `translate(${this.#rightSlideX}, 0)`)
                 }
             }
