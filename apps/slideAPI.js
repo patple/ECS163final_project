@@ -6,9 +6,7 @@ import Slide from "./slides/slideTemplate.js"
  */
 class Slider {
 
-    /**
-     * @type {Slide[]}
-     */
+    /** @type {Slide[]} */
     #slides = null;
     #length = null;
     #index = null;
@@ -19,8 +17,8 @@ class Slider {
     #rightSlideX = 0;
 
     /**
-     * Constructs a new Slider object with the given parameters.
-     * @param {Slide[]} slideArray - Defines an array of 'g' elements to be shown as slides, in order
+     * Constructs a {@link Slider} object with the given parameters.
+     * @param {Slide[]} slideArray - Defines an array of {@link Slide} objects to be shown as slides, in order
      * @param {Number} transitionDuration - Defines the time for each slide transition in milliseconds (ms)
      * @param {Number[]} boundaryArray - Defines an Array(3) of x positions as numbers, where: 
      *  - The first index specifies the x position of previous slides. Typically = -width.
@@ -36,8 +34,8 @@ class Slider {
     }
 
     /**
-     * Updates the Slider object's slides with a new array of 'g' elements, in order.
-     * @param {Array} slideArray - Defines an array of 'g' elements to be shown as slides, in order
+     * Updates the {@link Slider} object's slides with a new array of {@link Slide} objects, in order.
+     * @param {Array} slideArray - Defines an array of {@link Slide} objects to be shown as slides, in order
      * @returns {Number} 0 or -1, depending on success
      */
     new(slideArray) {
@@ -57,7 +55,7 @@ class Slider {
     }
 
     /**
-     * Updates the Slider object's transition time.
+     * Updates the {@link Slider} object's transition time.
      * @param {Number} newTime - Defines the time for each slide transition in milliseconds (ms)
      * @returns {Number} 0 or -1, depending on success
      */
@@ -75,7 +73,7 @@ class Slider {
     }
 
     /**
-     * Updates the Slider object's assigned slide x positions.
+     * Updates the {@link Slider} object's assigned slide x positions.
      * @param {Array} boundaryArray - Defines an Array(3) of x positions as numbers, where: 
      *  - The first index specifies the x position of previous slides. Typically = -width.
      *  - The second index specifies the x position of the current slide. Typically = 0.
