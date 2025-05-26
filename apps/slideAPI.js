@@ -150,7 +150,6 @@ class Slider {
      */
     #refreshSlides() {
         if (!this.#checkValidity()) return -1;
-        console.log(this.#valid)
         this.#slides.forEach((elem, i) => {
             if (i == this.#index) {
                 elem.attr("visibility", `visible`)
