@@ -1,10 +1,14 @@
 // hehehaha
+import Slide from "./slides/slideTemplate.js"
 
 /**
  * Class that defines a slideshow. Must be created with a constructor.
  */
 class Slider {
 
+    /**
+     * @type {Slide[]}
+     */
     #slides = null;
     #length = null;
     #index = null;
@@ -16,15 +20,15 @@ class Slider {
 
     /**
      * Constructs a new Slider object with the given parameters.
-     * @param {Array} gArray - Defines an array of 'g' elements to be shown as slides, in order
+     * @param {Slide[]} slideArray - Defines an array of 'g' elements to be shown as slides, in order
      * @param {Number} transitionDuration - Defines the time for each slide transition in milliseconds (ms)
-     * @param {Array} boundaryArray - Defines an Array(3) of x positions as numbers, where: 
+     * @param {Number[]} boundaryArray - Defines an Array(3) of x positions as numbers, where: 
      *  - The first index specifies the x position of previous slides. Typically = -width.
      *  - The second index specifies the x position of the current slide. Typically = 0.
      *  - The third index specifices the x position of next slides. Typically = width.
      */
-    constructor(gArray, transitionDuration, boundaryArray) {
-        this.new(gArray), this.#valid = true;
+    constructor(slideArray, transitionDuration, boundaryArray) {
+        this.new(slideArray), this.#valid = true;
         this.setTransitionDuration(transitionDuration);
         this.setSlideBoundaries(boundaryArray);
         this.#refreshSlides();
@@ -32,11 +36,12 @@ class Slider {
 
     /**
      * Updates the Slider object's slides with a new array of 'g' elements, in order.
-     * @param {Array} gArray - Defines an array of 'g' elements to be shown as slides, in order
+     * @param {Array} slideArray - Defines an array of 'g' elements to be shown as slides, in order
      * @returns {Number} 0 or -1, depending on success
      */
-    new(gArray) {
-        if (!(gArray.reduce((acc, elem) => ((elem.node().nodeName === "g") && acc), true))) {
+    new(slideArray) {
+        console.log(typeof(elem))
+        if (!(slideArray.reduce((elem, acc) => ((typeof(elem) == Slide) && acc)), true)){
             console.error(`Invalid element type in slider array. Expected all \'g\' elements`);
             this.#slides = null;
             this.on = null;
@@ -44,8 +49,8 @@ class Slider {
             this.#valid = false;
             return -1;
         }
-        this.#slides = gArray;
-        this.#length = gArray.length;
+        this.#slides = slideArray;
+        this.#length = slideArray.length;
         this.#index = 0;
         this.#valid = true;
         return 0;
@@ -150,16 +155,16 @@ class Slider {
      */
     #refreshSlides() {
         if (!this.#checkValidity()) return -1;
-        this.#slides.forEach((elem, i) => {
+        this.#slides.forEach((slide, i) => {
             if (i == this.#index) {
-                elem.attr("visibility", `visible`)
+                slide.base.attr("visibility", `visible`)
                     .attr("transform", `translate(${this.#centerSlideX}, 0)`);
             } else {
                 if (i < this.#index) {
-                    elem.attr("visibility", `collapse`)
+                    slide.base.attr("visibility", `collapse`)
                         .attr("transform", `translate(${this.#leftSlideX}, 0)`);
                 } else {
-                    elem.attr("visibility", `collapse`)
+                    slide.base.attr("visibility", `collapse`)
                         .attr("transform", `translate(${this.#rightSlideX}, 0)`)
                 }
             }

@@ -1,7 +1,49 @@
 // hoohoohahah
 
 class Slide {
-    
+    base = null;
+    width = 0;
+    height = 0;
+
+    /**
+     * Creates a new slide object with the given parameters.
+     * @param {Number} width - Defines the local width of the slide space.
+     * @param {Number} height - Defines the local height of the slide space.
+     */
+    constructor(width, height) {
+        this.base = d3.select("svg").append("g")
+            .attr("visibility", "visible");
+        this.width = width;
+        this.height = height
+    }
+
+    /**
+     * Sets the local width of the slide space.
+     * @param {Number} width - Width in pixels
+     * @returns {Number} 0 or -1 depending on success
+     */
+    setWidth(width) {
+        if (typeof(width) != Number) {
+            console.error(`Tried to set slide width to non-number: ${width}`);
+            return -1;
+        }
+        this.width = width
+        return 0;
+    }
+
+    /**
+     * Sets the local height of the slide space.
+     * @param {Number} height - Height in pixels
+     * @returns {Number} 0 or -1 depending on success
+     */
+    setWidth(height) {
+        if (typeof(height) != Number) {
+            console.error(`Tried to set slide height to non-number: ${height}`);
+            return -1;
+        }
+        this.height = height
+        return 0;
+    }
 }
 
 export default Slide;
