@@ -1,17 +1,17 @@
 import testmake from "./apps/test.js"
 import Slider from "./apps/slideAPI.js"
+import Slide from "./apps/slides/slideTemplate.js"
+import testmakeSlide from "./apps/testmakeslide.js"
 
 let width = window.innerWidth;
 let height = window.innerHeight;
 
-let a = testmake([0, 0, width/2, height/2])
-let b = testmake([0, height/2, width/2, height/2]).attr("fill", "crimson")
-let c = testmake([width/2, 0, width/2, height/2]).attr("fill", "steelblue")
-let d = testmake([width/2, height/2, width/2, height/2]).attr("fill", "gold")
+let a = testmakeSlide([0, 0, width/2, height/2, "black"]);
+let b = testmakeSlide([0, height/2, width/2, height/2, "magenta"]);
+let c = testmakeSlide([width/2, 0, width/2, height/2, "cyan"]);
+let d = testmakeSlide([width/2, height/2, width/2, height/2, "yellow"]);
 
-console.log(c.node().nodeName)
-
-let slides = new Slider([a, b, c, d,], 200, [-width, 0, width])
+let slides = new Slider([a, b, c, d], 200, [-width, 0, width])
 
 d3.select("svg")
     .on("click", function() {slides.goNext(); console.log("a")})
