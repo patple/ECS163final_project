@@ -28,10 +28,11 @@ class Slider {
      *  - The third index specifices the x position of next slides. Typically = width.
      */
     constructor(slideArray, transitionDuration, boundaryArray) {
-        this.new(slideArray), this.#valid = true;
-        this.setTransitionDuration(transitionDuration);
-        this.setSlideBoundaries(boundaryArray);
-        this.#refreshSlides();
+        if (this.new(slideArray) == -1 ||
+            this.setTransitionDuration(transitionDuration) ||
+            this.setSlideBoundaries(boundaryArray) ||
+            this.#refreshSlides())
+                console.error("Failed making Slider. Exiting Slider constructor.");
     }
 
     /**
@@ -40,8 +41,7 @@ class Slider {
      * @returns {Number} 0 or -1, depending on success
      */
     new(slideArray) {
-        console.log(typeof(elem))
-        if (!(slideArray.reduce((elem, acc) => ((typeof(elem) == Slide) && acc)), true)){
+        if (!(slideArray.reduce((acc, slide) => ((slide instanceof Slide) && acc), true))){
             console.error(`Invalid element type in slider array. Expected all \'g\' elements`);
             this.#slides = null;
             this.on = null;
@@ -103,8 +103,8 @@ class Slider {
             console.error(`Tried to illegally decrement slides index out of bounds: ${this.#index} -> ${this.#index - 1}`);
             return -1;
         }
-        let curr = this.#slides[this.#index];
-        let prev = this.#slides[this.#index - 1];
+        let curr = this.#slides[this.#index].base;
+        let prev = this.#slides[this.#index - 1].base;
         curr.transition()
             .duration(this.#transTime)
             .attr("transform",  `translate(${this.#rightSlideX}, 0)`)
@@ -131,8 +131,8 @@ class Slider {
             console.error(`Tried to illegally increment slides index out of bounds: ${this.#index} -> ${this.#index + 1}`);
             return -1;
         }
-        let curr = this.#slides[this.#index];
-        let next = this.#slides[this.#index + 1];
+        let curr = this.#slides[this.#index].base;
+        let next = this.#slides[this.#index + 1].base;
         curr.transition()
             .duration(this.#transTime)
             .attr("transform",  `translate(${this.#leftSlideX}, 0)`)
