@@ -11,23 +11,26 @@ class Slider {
     centerSlideX = 0;
     rightSlideX = 0;
 
-    /*
-     *
-     *
-     * 
+    /**
+     * Constructs a new Slider object with the given parameters.
+     * @param {Array} gArray - Defines an array of 'g' elements to be shown as slides, in order
+     * @param {Number} transitionDuration - Defines the time for each slide transition in milliseconds (ms)
+     * @param {Array} boundaryArray - Defines an Array(3) of x positions as numbers, where: 
+     *  - The first index specifies the x position of previous slides. Typically = -width.
+     *  - The second index specifies the x position of the current slide. Typically = 0.
+     *  - The third index specifices the x position of next slides. Typically = width.
      */
-    constructor(svgArray, transitionDuration, boundaryArray) {
-        this.new(svgArray), this.valid = true;
+    constructor(gArray, transitionDuration, boundaryArray) {
+        this.new(gArray), this.valid = true;
         this.setTransitionDuration(transitionDuration);
-        console.log(boundaryArray)
         this.setSlideBoundaries(boundaryArray);
         this.#refreshSlides();
     }
 
-    /*
-     *
-     *
-     * 
+    /**
+     * Updates the Slider object's slides with a new array of 'g' elements, in order.
+     * @param {Array} gArray - Defines an array of 'g' elements to be shown as slides, in order
+     * @returns {Number} 0 or -1, depending on success
      */
     new(gArray) {
         console.log(gArray)
@@ -47,36 +50,46 @@ class Slider {
         return 0;
     }
 
-    /*
-     *
-     *
-     * 
+    /**
+     * Updates the Slider object's transition time.
+     * @param {Number} newTime - Defines the time for each slide transition in milliseconds (ms)
+     * @returns {Number} 0 or -1, depending on success
      */
     setTransitionDuration(newTime) {
-        if (typeof(newTime) != "number")
+        if (typeof(newTime) != "number") {
             console.error(`Tried to set transition time to non-number: ${newTime}`);
-        newTime < 0 ? console.error(`Tried to set negative transition duration: ${this.transTime} -> ${newTime}`) :
-            this.transTime = newTime;
+            return -1;
+        }
+        if (newTime < 0) {
+            console.error(`Tried to set negative transition duration: ${this.transTime} -> ${newTime}`)
+            return -1;
+        }
+        this.transTime = newTime;
+        return 0;
     }
 
-    /*
-     *
-     *
-     * 
+    /**
+     * Updates the Slider object's assigned slide x positions.
+     * @param {Array} boundaryArray - Defines an Array(3) of x positions as numbers, where: 
+     *  - The first index specifies the x position of previous slides. Typically = -width.
+     *  - The second index specifies the x position of the current slide. Typically = 0.
+     *  - The third index specifices the x position of next slides. Typically = width.
+     * @returns {Number} 0 or -1, depending on success
      */
     setSlideBoundaries(boundaryArray) {
+        let err = 0
         typeof(boundaryArray[0]) == "number" ? this.leftSlideX = boundaryArray[0] :
-            console.error(`Tried to set left slide boundary to non-number: ${boundaryArray[0]}`);
+            (console.error(`Tried to set left slide boundary to non-number: ${boundaryArray[0]}`), err = -1);
         typeof(boundaryArray[1]) == "number" ? this.centerSlideX = boundaryArray[1] :
-            console.error(`Tried to set center slide boundary to non-number: ${boundaryArray[1]}`);
+            (console.error(`Tried to set center slide boundary to non-number: ${boundaryArray[1]}`), err = -1);
         typeof(boundaryArray[2]) == "number" ? this.rightSlideX = boundaryArray[2] :
-            console.error(`Tried to set right slide boundary to non-number: ${boundaryArray[2]}`);
+            (console.error(`Tried to set right slide boundary to non-number: ${boundaryArray[2]}`), err = -1);
+        return err;
     }
 
-    /*
-     *
-     *
-     * 
+    /**
+     * Goes to previous slide. Fails if on first slide.
+     * @returns {Number} 0 or -1, depending on success
      */
     goPrev() {
         if (!this.#checkValidity()) return -1;
@@ -102,10 +115,9 @@ class Slider {
         return 0;
     }
 
-    /*
-     *
-     *
-     * 
+    /**
+     * Goes to next slide. Fails if on last slide.
+     * @returns {Number} 0 or -1, depending on success
      */
     goNext() {
         if (!this.#checkValidity()) return -1;
@@ -131,10 +143,9 @@ class Slider {
         return 0;
     }
 
-    /*
-     *
-     *
-     * 
+    /**
+     * Refreshes all slide positions and visibility based on index.
+     * @returns {Number} 0 or -1, based on success
      */
     #refreshSlides() {
         if (!this.#checkValidity()) return -1;
@@ -153,13 +164,13 @@ class Slider {
                 }
             }
         })
+        return 0;
     }
 
 
-    /*
-     *
-     *
-     * 
+    /** 
+     * Checks whether the slides are valid, which is set on {@link new()}.
+     * @returns {Bool} 
      */
     #checkValidity() {
         if (this.valid) {
