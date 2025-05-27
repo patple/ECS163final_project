@@ -8,9 +8,12 @@ class StreamGraph {
     streamMargin = {top: 0, right: 0, bottom: 0, left: 0};
     streamSize = {width: 0, height: 0};
 
-    topPubs = null;
+    
     pubColors = d3.schemeCategory10;
-    publisherSales = {NA: null, JP: null, EU: null, OTHER: null, GLOBAL: null};
+    topPubs = {NA: null, JP: null, EU: null, Other: null, Global: null};
+    publisherSales = {NA: null, JP: null, EU: null, Other: null, Global: null};
+    publisherStreamData = {NA: null, JP: null, EU: null, Other: null, Global: null};
+    years = null;
     
     
     constructor(parent) {
@@ -34,8 +37,8 @@ class StreamGraph {
      * @returns {Boolean}
      */
     resizeWindow(windowSize) {
-        let ogkeys = this.windowSize.keys();
-        windowSize.keys().forEach(key => {
+        let ogkeys = Object.keys(this.windowSize);
+        Object.keys(this.windowSize).forEach(key => {
             if (!ogkeys.includes(key)) {
                 console.error(`Tried to resize window with bad key: ${key}`);
                 return false;
@@ -54,8 +57,8 @@ class StreamGraph {
      * @returns {Boolean}
      */
     resizeStream(streamSize) {
-        let ogkeys = this.streamSize.keys();
-        streamSize.keys().forEach(key => {
+        let ogkeys = Object.keys(this.streamSize);
+        Object.keys(this.streamSize).forEach(key => {
             if (!ogkeys.includes(key)) {
                 console.error(`Tried to resize stream with bad key: ${key}`);
                 return false;
@@ -74,8 +77,8 @@ class StreamGraph {
      * @returns {Boolean}
      */
     moveStream(streamPos) {
-        let ogkeys = this.streamPos.keys();
-        streamPos.keys().forEach(key => {
+        let ogkeys = Object.keys(this.streamPos);
+        Object.keys(this.streamPos).forEach(key => {
             if (!ogkeys.includes(key)) {
                 console.error(`Tried to move stream with bad key: ${key}`);
                 return false;
@@ -94,8 +97,8 @@ class StreamGraph {
      * @returns {Boolean}
      */
     defineStreamMargins(streamMargin) {
-        let ogkeys = this.streamMargin.keys();
-        streamMargin.keys().forEach(key => {
+        let ogkeys = Object.keys(this.streamMargin);
+        Object.keys(this.streamMargin).forEach(key => {
             if (!ogkeys.includes(key)) {
                 console.error(`Tried to define stream margins with bad key: ${key}`);
                 return false;
@@ -112,6 +115,7 @@ class StreamGraph {
 
     initDataset(dataset) {
         this.dataset = [...dataset];
+        this.years = Array.from(new Set(this.dataset.map(d => d.Year))).sort((a, b) => a - b).filter(d => !isNaN(d));
     }
 
     /**
@@ -120,48 +124,52 @@ class StreamGraph {
      * @param {String} region
      */
     calculateRegion(region) {
-        this.dataset.forEach(d => {
-            d.Year = +d.Year;
-            d.NA_Sales = +d.NA_Sales;
+
+        let regionalSales = region.concat("_Sales");
+        let data = [...this.dataset];
+
+        data.forEach(d => {
+            d.Year = Number(d.Year);
+            d[regionalSales] = Number(d[regionalSales]);
         });
 
-        this.dataset = this.dataset.filter(d => !isNaN(d.Year) && !isNaN(d.NA_Sales));
-
-        const publisherNASales = {};
-        this.dataset.forEach(d=>{
-            if (!publisherNASales[d.Publisher]){
-                publisherNASales[d.Publisher] = 0;
+        data = data.filter(d => !isNaN(d.Year) && !isNaN(d[regionalSales]));
+        this.publisherSales[region] = {};
+        data.forEach(d=>{
+            if (!this.publisherSales[region][d.Publisher] === undefined){
+                this.publisherSales[region][d.Publisher] = 0;
             }
-            publisherNASales[d.Publisher] += d.NA_Sales
+            this.publisherSales[region][d.Publisher] += d[regionalSales]
         })
-        const topPubs = Object.entries(publisherNASales)
-            .sort((a,b)=>b[1]-a[1])
+
+        this.topPubs[region] = Object.entries(this.publisherSales[region])
+            .sort((a,b) => b[1] - a[1])
             .slice(0,10)
-            .map(d=>d[0])
+            .map(d => d[0])
 
-        const years = Array.from(new Set(data.map(d => d.Year))).sort((a, b) => a - b);
-
-        this.publisherSales[region] = years.map(year => {
-            const salesForYear = data.filter(d=> d.Year == year);
-            const counts = {};
-            topPubs.forEach(pub =>{
+        this.publisherStreamData[region] = this.years.map(year => {
+            let salesForYear = data.filter(d => d.Year == Number(year));
+            let counts = {};
+            this.topPubs[region].forEach(pub =>{
                 counts[pub] = salesForYear
                     .filter(d=> d.Publisher == pub)
-                    .reduce((acc, curr) => acc + curr.NA_Sales, 0);
+                    .reduce((acc, curr) => acc + curr[regionalSales], 0);
             })
-            return{Year: year, ...counts};
+            return{Year: Number(year), ...counts};
         })
     }
 
     drawRegion(region) {
+        console.log(this.years)
+        console.log(this.publisherStreamData[region])
         const series = d3.stack()
             .offset(d3.stackOffsetWiggle)
             .order(d3.stackOrderInsideOut)
-            .keys(topPubs)
-            (this.publisherSales[region])
+            .keys(this.topPubs[region])
+            (this.publisherStreamData[region])
 
         const xStream = d3.scaleLinear()
-            .domain(d3.extent(years))
+            .domain(d3.extent(this.years))
             .range([this.streamPos.y + this.streamMargin.left, this.streamPos.x + this.streamSize.width - this.streamMargin.right])
         
         const yStream = d3.scaleLinear()
@@ -169,16 +177,18 @@ class StreamGraph {
             .range([this.streamPos.y + this.streamSize.height + this.streamMargin.bottom, this.streamPos.y + this.streamMargin.top])
         
         const area = d3.area()
-            .x(d => xStream(+d.data.Year))
+            .x(d => xStream(d.data.Year))
             .y0(d => yStream(d[0]))
             .y1(d => yStream(d[1]))
             .curve(d3.curveBasis)
         
         const publishersColors = d3.scaleOrdinal()
-            .domain(topPubs)
+            .domain(this.topPubs[region])
             .range(d3.schemeCategory10)
 
-        streamGraph.selectAll("path")
+        
+
+        this.base.selectAll("path")
             .data(series)
             .join("path")
             .attr("fill", d => publishersColors(d.key))
@@ -188,34 +198,34 @@ class StreamGraph {
             .text(d =>`${d.key}: ${(d[d.length - 1][1] - d[d.length -1][0]).toFixed(2)}M` )
 
         //Xaxis in years
-        streamGraph.append("g")
-            .attr("transform", `translate(0, ${streamMargin.bottom})`)
-            .call(d3.axisBottom(xStream).ticks(years.length).tickFormat(d3.format("d")))
+        this.base.append("g")
+            .attr("transform", `translate(0, ${this.streamMargin.bottom})`)
+            .call(d3.axisBottom(xStream).ticks(this.years.length).tickFormat(d3.format("d")))
         
         //Yaxis in sales in millions
-        streamGraph.append("g")
+        this.base.append("g")
             .call(d3.axisLeft(yStream).ticks(5))
         
 
         //Yaxis label
-        streamGraph.append("text")
+        this.base.append("text")
             .attr("x", 150)
-            .attr("y", streamMargin.left -100)
+            .attr("y", this.streamMargin.left - 100)
             .attr("font-size", "15px")
             .attr("text-anchor", "middle")
             .attr("transform", "rotate(-90)")
             .text("SALES (MILLIONS)")
             
         //Xaxis label
-        streamGraph.append("text")
-            .attr("x", streamMargin.bottom + 700)
-            .attr("y",streamMargin.bottom + 50)
+        this.base.append("text")
+            .attr("x", this.streamMargin.bottom + 700)
+            .attr("y", this.streamMargin.bottom + 50)
             .attr("font-size", "15px")
             .attr("text-anchor", "middle")
             .text("YEAR")
         
         // graph label
-        streamGraph.append("text")
+        this.base.append("text")
             .attr("x", 400 )
             .attr("y", -320)
             .attr("text-anchor", "middle")
