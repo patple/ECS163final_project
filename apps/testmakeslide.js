@@ -1,4 +1,5 @@
 import Slide from "./slides/slideTemplate.js"
+import createStreamGraph from "./streamMap1.js";
 
 function testmakeSlide(dataset) {
     let a = new Slide(20000, 20102010210)
@@ -9,6 +10,8 @@ function testmakeSlide(dataset) {
         .attr("width", dataset[2])
         .attr("height", dataset[3])
         .attr("fill", dataset[4]);
+
+    createStreamGraph(a)
     return a
 }
 
