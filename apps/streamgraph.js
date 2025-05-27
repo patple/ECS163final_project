@@ -128,15 +128,21 @@ class StreamGraph {
         let regionalSales = region.concat("_Sales");
         let data = [...this.dataset];
 
-        data.forEach(d => {
-            d.Year = Number(d.Year);
-            d[regionalSales] = Number(d[regionalSales]);
-        });
+        // Clean and parse data
+        data = data.filter(d => d.Year && d[regionalSales] && d.Publisher)
+                  .map(d => {
+                        let entry = {
+                            Year: +d.Year,
+                            Publisher: d.Publisher
+                        }
+                        entry[regionalSales] = +d[regionalSales]
+                      return entry;
+                  })
+                  .filter(d => !isNaN(d.Year) && !isNaN(d[regionalSales]));
 
-        data = data.filter(d => !isNaN(d.Year) && !isNaN(d[regionalSales]));
         this.publisherSales[region] = {};
         data.forEach(d=>{
-            if (!this.publisherSales[region][d.Publisher] === undefined){
+            if (!this.publisherSales[region][d.Publisher]){
                 this.publisherSales[region][d.Publisher] = 0;
             }
             this.publisherSales[region][d.Publisher] += d[regionalSales]
@@ -160,6 +166,11 @@ class StreamGraph {
     }
 
     drawRegion(region) {
+        // Verify we have valid data before proceeding
+        if (this.publisherStreamData[region].length === 0 || this.topPubs[region].length === 0) {
+            console.error("No valid data to display");
+            return;
+        }
         console.log(this.years)
         console.log(this.publisherStreamData[region])
         const series = d3.stack()
