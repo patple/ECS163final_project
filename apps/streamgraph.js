@@ -1,59 +1,134 @@
 
 class StreamGraph {
-    parent = null
-    base = null
-    streamPos = {x: 0, y: 0}
-    streamMargin = {top: 0, right: 0, bottom: 0, left: 0}
-    streamSize = {width: 0, height: 0}
+    parent = null;
+    base = null;
+    dataset = null;
+    windowSize = {width: 0, height: 0};
+    streamPos = {x: 0, y: 0};
+    streamMargin = {top: 0, right: 0, bottom: 0, left: 0};
+    streamSize = {width: 0, height: 0};
+
+    topPubs = null;
+    pubColors = d3.schemeCategory10;
+    publisherSales = {NA: null, JP: null, EU: null, OTHER: null, GLOBAL: null};
     
     
-    constructor(parent, windowSize, streamPos, streamMargin, streamSize) {
-        this.parent = parent
-        this.base = parent.append("g")
+    constructor(parent) {
+        this.parent = parent;
+        this.base = parent.append("g");
     }
 
+    /**
+     * 
+     * @param {*} parent 
+     * @returns {Boolean}
+     */
     attach(parent) {
-        if ()
-        this.parent = parent
+        this.parent = parent;
+        return true;
     }
 
+    /**
+     * 
+     * @param {Object} windowSize 
+     * @returns {Boolean}
+     */
+    resizeWindow(windowSize) {
+        let ogkeys = this.windowSize.keys();
+        windowSize.keys().forEach(key => {
+            if (!ogkeys.includes(key)) {
+                console.error(`Tried to resize window with bad key: ${key}`);
+                return false;
+            } else if (isNaN(windowSize[key])) {
+                console.error(`Tried to resize window with non-number: ${windowSize[key]}`);
+                return false;
+            }
+            this.windowSize[key] = windowSize[key];
+        })
+        return true;
+    }
+
+    /**
+     * 
+     * @param {Object} streamSize 
+     * @returns {Boolean}
+     */
+    resizeStream(streamSize) {
+        let ogkeys = this.streamSize.keys();
+        streamSize.keys().forEach(key => {
+            if (!ogkeys.includes(key)) {
+                console.error(`Tried to resize stream with bad key: ${key}`);
+                return false;
+            } else if (isNaN(streamSize[key])) {
+                console.error(`Tried to resize stream with non-number: ${streamSize[key]}`);
+                return false;
+            }
+            this.streamSize[key] = streamSize[key];
+        })
+        return true;
+    }
     
+    /**
+     * 
+     * @param {*} streamPos 
+     * @returns {Boolean}
+     */
+    moveStream(streamPos) {
+        let ogkeys = this.streamPos.keys();
+        streamPos.keys().forEach(key => {
+            if (!ogkeys.includes(key)) {
+                console.error(`Tried to move stream with bad key: ${key}`);
+                return false;
+            } else if (isNaN(streamPos[key])) {
+                console.error(`Tried to move stream with non-number: ${streamPos[key]}`);
+                return false;
+            }
+            this.streamPos[key] = streamPos[key];
+        })
+        return true;
+    }
+
+    /**
+     * 
+     * @param {*} streamMargin 
+     * @returns {Boolean}
+     */
+    defineStreamMargins(streamMargin) {
+        let ogkeys = this.streamMargin.keys();
+        streamMargin.keys().forEach(key => {
+            if (!ogkeys.includes(key)) {
+                console.error(`Tried to define stream margins with bad key: ${key}`);
+                return false;
+            } else if (isNaN(streamMargin[key])) {
+                console.error(`Tried to define stream margins with non-number: ${streamMargin[key]}`);
+                return false;
+            }
+            this.streamMargin[key] = streamMargin[key];
+        })
+        return true;
+    }
 
 
-}
 
-export default StreamGraph
+    initDataset(dataset) {
+        this.dataset = [...dataset];
+    }
 
-
-
-export function drawStreamGraph(slide){
-    const width = slide.innerWidth;
-    const height = slide.innerHeight;
-
-
-    let streamLeft = 0, streamTop = 400;
-    let streamMargin = {top: 10, right: 30, bottom: 0, left: 60},
-        streamWidth = width - 450-streamMargin.left - streamMargin.right,
-        streamHeight = height - streamMargin.top - streamMargin.bottom;
-
-
-    const svg = slide.base;
-
-    const streamGraph = svg.append("g") 
-                    .attr("width", streamWidth + streamMargin.left + streamMargin.right)
-                    .attr("height", streamHeight + streamMargin.top + streamMargin.bottom)
-                    .attr("transform", `translate(${streamMargin.left+300}, ${streamTop-20})`);
-
-    d3.csv("vgsales.csv").then(data=>{
-        data.forEach(d=>{
+    /**
+     * 
+     * @param {Array} dataset
+     * @param {String} region
+     */
+    calculateRegion(region) {
+        this.dataset.forEach(d => {
             d.Year = +d.Year;
             d.NA_Sales = +d.NA_Sales;
         });
 
-        data = data.filter(d=> !isNaN(d.Year) && !isNaN(d.NA_Sales));
+        this.dataset = this.dataset.filter(d => !isNaN(d.Year) && !isNaN(d.NA_Sales));
 
-        const publisherNASales ={};
-        data.forEach(d=>{
+        const publisherNASales = {};
+        this.dataset.forEach(d=>{
             if (!publisherNASales[d.Publisher]){
                 publisherNASales[d.Publisher] = 0;
             }
@@ -64,32 +139,36 @@ export function drawStreamGraph(slide){
             .slice(0,10)
             .map(d=>d[0])
 
-            const years = Array.from(new Set(data.map(d => d.Year))).sort((a, b) => a - b);
+        const years = Array.from(new Set(data.map(d => d.Year))).sort((a, b) => a - b);
 
-            const salesPerYear = years.map(year => {
-                const salesForYear = data.filter(d=> d.Year == year);
-                const counts = {};
-                topPubs.forEach(pub =>{
-                    counts[pub] = salesForYear
-                        .filter(d=> d.Publisher == pub)
-                        .reduce((acc, curr) => acc + curr.NA_Sales, 0);
+        this.publisherSales[region] = years.map(year => {
+            const salesForYear = data.filter(d=> d.Year == year);
+            const counts = {};
+            topPubs.forEach(pub =>{
+                counts[pub] = salesForYear
+                    .filter(d=> d.Publisher == pub)
+                    .reduce((acc, curr) => acc + curr.NA_Sales, 0);
             })
             return{Year: year, ...counts};
         })
+    }
 
+
+
+    drawRegion(region) {
         const series = d3.stack()
             .offset(d3.stackOffsetWiggle)
             .order(d3.stackOrderInsideOut)
             .keys(topPubs)
-            (salesPerYear)
+            (this.publisherSales[region])
 
         const xStream = d3.scaleLinear()
             .domain(d3.extent(years))
-            .range([0, streamWidth])
+            .range([this.streamPos.y + this.streamMargin.left, this.streamPos.x + this.streamSize.width - this.streamMargin.right])
         
         const yStream = d3.scaleLinear()
             .domain([d3.min(series, d => d3.min(d, d => d[0])), d3.max(series, d => d3.max(d, d => d[1]))])
-            .range([streamHeight, 0])
+            .range([this.streamPos.y + this.streamSize.height + this.streamMargin.bottom, this.streamPos.y + this.streamMargin.top])
         
         const area = d3.area()
             .x(d => xStream(+d.data.Year))
@@ -111,12 +190,12 @@ export function drawStreamGraph(slide){
             .text(d =>`${d.key}: ${(d[d.length - 1][1] - d[d.length -1][0]).toFixed(2)}M` )
 
         //Xaxis in years
-        streamGraph.append("g" )
+        streamGraph.append("g")
             .attr("transform", `translate(0, ${streamMargin.bottom})`)
             .call(d3.axisBottom(xStream).ticks(years.length).tickFormat(d3.format("d")))
         
         //Yaxis in sales in millions
-        streamGraph.append("g" )
+        streamGraph.append("g")
             .call(d3.axisLeft(yStream).ticks(5))
         
 
@@ -144,45 +223,10 @@ export function drawStreamGraph(slide){
             .attr("text-anchor", "middle")
             .attr("font-weight","bold")
             .text("Publisher Sales in North America Over Years")
-        
-        //key for streamgraph
-        const key = streamGraph.append("g")
-            .attr("class", "legend")
-            .attr("transform", `translate(${streamHeight+ 50}, 50 )`)
-        
-        const keySpacing = 20;
-        key.selectAll(".key-item")
-            .data(topPubs)
-            .enter()
-            .append("g")
-            .attr("class", "key-item")
-            .attr("transform", (d,i) => `translate(0, ${i*keySpacing})`)
-            .each(function(d){
-                const g = d3.select(this)
-                g.select(this)
-                    .append("rect")
-                    .attr("x", 0)
-                    .attr("y", 0)
-                    .attr("width", 16)
-                    .attr("height", 16)
-                    .attr("fill", publishersColors(d))
-                    .style("cursor", "pointer")
-                g.append("text")
-                    .attr("x", 20)
-                    .attr("y", 12)
-                    .style("font-size", "12px")
-                    .text(d)
-                    
-            })
-
-        
-        
-
-    })
-
-
+    }
 }
 
+export default StreamGraph
 
 
 
