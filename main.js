@@ -3,6 +3,7 @@ import Slider from "./apps/slideAPI.js"
 import Slide from "./apps/slides/slideTemplate.js"
 import StreamGraph from "./apps/streamgraph.js"
 import testmakeSlide from "./apps/testmakeslide.js"
+import { createStreamMapSlide } from "./apps/streamMap1.js";
 
 let width = window.innerWidth;
 let height = window.innerHeight;
@@ -30,5 +31,13 @@ let slides = new Slider([a, b, c, d], 200, [-width, 0, width])
 
 
 d3.select("svg")
-    .on("click", function() {slides.goNext(); console.log("a")})
-    .on("contextmenu", function() {d3.event.preventDefault(); slides.goPrev(); console.log("b")})
+    .on("click", function() { slides.goNext(); })
+    .on("contextmenu", function() { 
+        d3.event.preventDefault(); 
+        slides.goPrev(); 
+    });
+
+// each butt action
+document.getElementById('zoom-in')?.addEventListener('click', function() {
+    console.log('Zoom in clicked on stream graph');
+});

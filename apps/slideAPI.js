@@ -31,6 +31,8 @@ class Slider {
             this.setSlideBoundaries(boundaryArray) ||
             this.#refreshSlides())
                 console.error("Failed making Slider. Exiting Slider constructor.");
+            this.currentIndex = 0;
+            this.onSlideChange = null; 
     }
 
     /**
@@ -116,6 +118,8 @@ class Slider {
             .attr("transform", `translate(${this.#centerSlideX}, 0)`);
 
         this.#index--;
+        this.currentIndex--;
+        if (this.onSlideChange) this.onSlideChange(this.currentIndex);
         return 0;
     }
 
@@ -144,7 +148,10 @@ class Slider {
             .attr("transform", `translate(${this.#centerSlideX}, 0)`);
 
         this.#index++;
+        this.currentIndex++;
+        if (this.onSlideChange) this.onSlideChange(this.currentIndex);
         return 0;
+        
     }
 
     /**
