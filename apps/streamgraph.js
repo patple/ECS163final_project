@@ -153,8 +153,6 @@ class StreamGraph {
         })
     }
 
-
-
     drawRegion(region) {
         const series = d3.stack()
             .offset(d3.stackOffsetWiggle)
