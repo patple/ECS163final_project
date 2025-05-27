@@ -37,7 +37,7 @@ class Slide {
      * @param {Number} height - Height in pixels
      * @returns {Number} 0 or -1 depending on success
      */
-    setWidth(height) {
+    setHeight(height) {
         if (typeof(height) != Number) {
             console.error(`Tried to set slide height to non-number: ${height}`);
             return -1;
