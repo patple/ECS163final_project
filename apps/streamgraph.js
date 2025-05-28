@@ -115,7 +115,9 @@ class StreamGraph {
 
     initDataset(dataset) {
         this.dataset = [...dataset];
-        this.years = d3.range(...d3.extent(dataset.map(d => d.Year).filter(d => !isNaN(d))), 1);
+        let yrextent = d3.extent(dataset.map(d => d.Year).filter(d => !isNaN(d)));
+        yrextent[1]++;
+        this.years = d3.range(...yrextent, 1);
 
     }
 
