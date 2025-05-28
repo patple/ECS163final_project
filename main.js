@@ -3,7 +3,6 @@ import Slider from "./apps/slideAPI.js"
 import Slide from "./apps/slides/slideTemplate.js"
 import StreamGraph from "./apps/streamgraph.js"
 import testmakeSlide from "./apps/testmakeslide.js"
-import { createStreamMapSlide } from "./apps/streamMap1.js";
 
 let width = window.innerWidth;
 let height = window.innerHeight;
@@ -18,7 +17,7 @@ console.log(Object.keys({width: 500, height: 500}))
     streamgraph.resizeStream({width: 1200, height: 500})
     streamgraph.defineStreamMargins({top: 50, left: 50, bottom: 50, right: 50})
 
-d3.csv("../data/vgsales.csv").then(data => {
+d3.csv("./data/vgsales.csv").then(data => {
     streamgraph.initDataset(data);
     console.log(streamgraph.dataset)
     streamgraph.calculateRegion("NA");
