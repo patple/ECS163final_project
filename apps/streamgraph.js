@@ -171,8 +171,6 @@ class StreamGraph {
             console.error("No valid data to display");
             return;
         }
-        console.log(this.years)
-        console.log(this.publisherStreamData[region])
         const series = d3.stack()
             .offset(d3.stackOffsetWiggle)
             .order(d3.stackOrderInsideOut)
@@ -191,7 +189,6 @@ class StreamGraph {
             .x(d => xStream(d.data.Year))
             .y0(d => yStream(d[0]))
             .y1(d => yStream(d[1]))
-            .curve(d3.curveBasis)
         
         const publishersColors = d3.scaleOrdinal()
             .domain(this.topPubs[region])
@@ -218,8 +215,6 @@ class StreamGraph {
             .attr("transform", `translate(${this.streamPos.x + this.streamMargin.left}, 0)`)
             .call(d3.axisLeft(yStream).ticks(5))
 
-        
-        console.log((this.streamPos.y + this.streamMargin.top + this.streamPos.y + this.streamSize.height - this.streamMargin.bottom) / 2)
 
         //Yaxis label
         let yaxisx = this.streamPos.x + this.streamMargin.left - 40
@@ -248,6 +243,10 @@ class StreamGraph {
             .attr("text-anchor", "middle")
             .attr("font-weight","bold")
             .text("Publisher Sales in North America Over Years")
+        
+        console.log(this.topPubs[region]);
+        console.log(this.publisherStreamData[region]);
+        console.log(this.years)
     }
 }
 
