@@ -23,8 +23,8 @@ d3.csv("./data/vgsales.csv").then(data => {
 
     streamgraph.initDataset(data);
     //console.log(streamgraph.dataset)
-    streamgraph.calculateRegion("JP");
-    streamgraph.drawRegion("JP");
+    streamgraph.calculateRegion("NA");
+    streamgraph.drawRegion("NA");
 
     let slides = new Slider([a, b, c, d], 200, [-width, 0, width])
     d3.select("svg")
@@ -33,6 +33,24 @@ d3.csv("./data/vgsales.csv").then(data => {
         d3.event.preventDefault(); 
         slides.goPrev(); 
     });
+
+    // Controls the display of all overlays
+    function updateOverlays(currentIndex) {
+        document.querySelectorAll('.slide-overlay').forEach(overlay => {
+            overlay.style.display = parseInt(overlay.dataset.slideIndex) === currentIndex 
+                ? 'block' 
+                : 'none';
+        });
+    }
+
+    // ADD Slide switch
+    slides.onSlideChange = (currentIndex) => {
+        updateOverlays(currentIndex);
+    };
+
+    // int display
+    updateOverlays(slides.currentIndex);
+
 
     // each butt action
     document.getElementById('zoom-in')?.addEventListener('click', function() {
