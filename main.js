@@ -23,8 +23,8 @@ d3.csv("./data/vgsales.csv").then(data => {
 
     streamgraph.initDataset(data);
     //console.log(streamgraph.dataset)
-    streamgraph.calculateRegion("NA");
-    streamgraph.drawRegion("NA");
+    streamgraph.calculateRegion("JP");
+    streamgraph.drawRegion("JP");
 
     let slides = new Slider([a, b, c, d], 200, [-width, 0, width])
     d3.select("svg")
