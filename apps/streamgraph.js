@@ -190,12 +190,11 @@ class StreamGraph {
             .x(d => xStream(d.data.Year))
             .y0(d => yStream(d[0]))
             .y1(d => yStream(d[1]))
+            .curve(d3.curveBasis)
         
         const publishersColors = d3.scaleOrdinal()
             .domain(this.topPubs[region])
             .range(d3.schemeCategory10)
-
-        
 
         this.base.selectAll("path")
             .data(series)
@@ -244,10 +243,6 @@ class StreamGraph {
             .attr("text-anchor", "middle")
             .attr("font-weight","bold")
             .text("Publisher Sales in North America Over Years")
-        
-        console.log(this.topPubs[region]);
-        console.log(this.publisherStreamData[region]);
-        console.log(this.years)
     }
 }
 
