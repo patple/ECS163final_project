@@ -181,11 +181,11 @@ class StreamGraph {
 
         const xStream = d3.scaleLinear()
             .domain(d3.extent(this.years))
-            .range([this.streamPos.y + this.streamMargin.left, this.streamPos.x + this.streamSize.width - this.streamMargin.right])
+            .range([this.streamPos.x + this.streamMargin.left, this.streamPos.x + this.streamSize.width - this.streamMargin.right])
         
         const yStream = d3.scaleLinear()
             .domain([d3.min(series, d => d3.min(d, d => d[0])), d3.max(series, d => d3.max(d, d => d[1]))])
-            .range([this.streamPos.y + this.streamSize.height + this.streamMargin.bottom, this.streamPos.y + this.streamMargin.top])
+            .range([this.streamPos.y + this.streamSize.height - this.streamMargin.bottom, this.streamPos.y + this.streamMargin.top])
         
         const area = d3.area()
             .x(d => xStream(d.data.Year))
@@ -210,35 +210,41 @@ class StreamGraph {
 
         //Xaxis in years
         this.base.append("g")
-            .attr("transform", `translate(0, ${this.streamMargin.bottom})`)
+            .attr("transform", `translate(0, ${this.streamPos.y + this.streamSize.height - this.streamMargin.bottom})`)
             .call(d3.axisBottom(xStream).ticks(this.years.length).tickFormat(d3.format("d")))
         
         //Yaxis in sales in millions
         this.base.append("g")
+            .attr("transform", `translate(${this.streamPos.x + this.streamMargin.left}, 0)`)
             .call(d3.axisLeft(yStream).ticks(5))
+
         
+        console.log((this.streamPos.y + this.streamMargin.top + this.streamPos.y + this.streamSize.height - this.streamMargin.bottom) / 2)
 
         //Yaxis label
+        let yaxisx = this.streamPos.x + this.streamMargin.left - 40
+        let yaxisy = (this.streamPos.y + this.streamMargin.top + this.streamPos.y + this.streamSize.height - this.streamMargin.bottom) / 2
         this.base.append("text")
-            .attr("x", 150)
-            .attr("y", this.streamMargin.left - 100)
+            .attr("x", yaxisx)
+            .attr("y", yaxisy)
             .attr("font-size", "15px")
             .attr("text-anchor", "middle")
+            .attr("transform-origin", `${yaxisx} ${yaxisy}`)
             .attr("transform", "rotate(-90)")
             .text("SALES (MILLIONS)")
             
         //Xaxis label
         this.base.append("text")
-            .attr("x", this.streamMargin.bottom + 700)
-            .attr("y", this.streamMargin.bottom + 50)
+            .attr("x", (this.streamPos.x + this.streamMargin.left + this.streamPos.x + this.streamSize.width - this.streamMargin.right) / 2)
+            .attr("y", this.streamPos.y + this.streamSize.height - this.streamMargin.bottom + 50)
             .attr("font-size", "15px")
             .attr("text-anchor", "middle")
             .text("YEAR")
         
         // graph label
         this.base.append("text")
-            .attr("x", 400 )
-            .attr("y", -320)
+            .attr("x", (this.streamPos.x + this.streamMargin.left + this.streamPos.x + this.streamSize.width - this.streamMargin.right) / 2)
+            .attr("y", this.streamPos.y + this.streamMargin.top - 30)
             .attr("text-anchor", "middle")
             .attr("font-weight","bold")
             .text("Publisher Sales in North America Over Years")

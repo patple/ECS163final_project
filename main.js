@@ -15,7 +15,8 @@ let d = testmakeSlide([width/2, height/2, width/2, height/2, "yellow"]);
 let streamgraph = new StreamGraph(a.base)
 console.log(Object.keys({width: 500, height: 500}))
     streamgraph.resizeStream({width: 1200, height: 500})
-    streamgraph.defineStreamMargins({top: 50, left: 50, bottom: 50, right: 50})
+    streamgraph.moveStream({x: 20, y: 200})
+    streamgraph.defineStreamMargins({top: 50, left: 100, bottom: 50, right: 50})
 
 d3.csv("./data/vgsales.csv").then(data => {
     streamgraph.initDataset(data);
