@@ -14,6 +14,9 @@ class StreamGraph {
     publisherSales = {NA: null, JP: null, EU: null, Other: null, Global: null};
     publisherStreamData = {NA: null, JP: null, EU: null, Other: null, Global: null};
     years = null;
+
+    genreSales ={ NA: null, JP : null, EU: null, Other: null, Global: null};
+    genreStreaemData = {NA: null, JP: null, EU: null, Other: null, Global: null};
     
     
     constructor(parent) {
@@ -167,6 +170,129 @@ class StreamGraph {
             return{Year: Number(year), ...counts};
         })
     }
+
+    calculateGenre(region){
+        let regionalSales = region.concat("_Sales");
+        let data = [...this.dataset];
+
+        // Clean and parse data
+        data = data.filter(d => d.Year && d[regionalSales] && d.Publisher)
+                  .map(d => {
+                        let entry = {
+                            Year: +d.Year,
+                            Genre: d.Genre,
+                        }
+                        entry[regionalSales] = +d[regionalSales]
+                      return entry;
+                  })
+                  .filter(d => !isNaN(d.Year) && !isNaN(d[regionalSales]));
+        
+        
+        this.genreSales[region] = {};
+        data.forEach(d=>{
+            if (!this.genreSales[region][d.Genre]){
+                this.genreSales[region][d.Genre] = 0;
+            }
+            this.genreSales[region][d.Genre] += d[regionalSales]
+        })
+
+        this.topGenres = this.topGenres || {}
+        this.topGenres[region] = Object.entries(this.genreSales[region])
+            .sort((a,b) => b[1] - a[1])
+            .map(d => d[0])
+        
+        
+        this.genreStreaemData[region] = this.years.map(year => {
+            let salesForYear = data.filter(d => d.Year == Number(year));
+            let counts = {};
+            this.topGenres[region].forEach(genre =>{
+                counts[genre] = salesForYear
+                    .filter(d=> d.Genre == genre)
+                    .reduce((acc, curr) => acc + curr[regionalSales], 0);
+            })
+            return{Year: Number(year), ...counts};
+        })
+    }
+
+    drawGenre(region) {
+        // Verify we have valid data before proceeding
+        if (!this.genreStreaemData[region] || this.genreStreaemData[region].length === 0) {
+            console.error("No valid data to display");
+            return;
+        }
+        const series = d3.stack()
+            .offset(d3.stackOffsetWiggle)
+            .order(d3.stackOrderInsideOut)
+            .keys(this.topGenres[region])
+            (this.genreStreaemData[region])
+
+        const xStream = d3.scaleLinear()
+            .domain(d3.extent(this.years))
+            .range([this.streamPos.x + this.streamMargin.left, this.streamPos.x + this.streamSize.width - this.streamMargin.right])
+        
+        const yStream = d3.scaleLinear()
+            .domain([d3.min(series, d => d3.min(d, d => d[0])), d3.max(series, d => d3.max(d, d => d[1]))])
+            .range([this.streamPos.y + this.streamSize.height - this.streamMargin.bottom, this.streamPos.y + this.streamMargin.top])
+        
+        const area = d3.area()
+            .x(d => xStream(d.data.Year))
+            .y0(d => yStream(d[0]))
+            .y1(d => yStream(d[1]))
+            .curve(d3.curveBasis)
+        
+        const genreColors = d3.scaleOrdinal()
+            .domain(this.topGenres[region])
+            .range(d3.schemeCategory10)
+
+        this.base.selectAll("path")
+            .data(series)
+            .join("path")
+            .attr("fill", d => genreColors(d.key))
+            .attr("class", "stream-colors")
+            .attr("d", area)
+            .append("title")
+            .text(d =>`${d.key}: ${(d[d.length - 1][1] - d[d.length -1][0]).toFixed(2)}M` )
+
+        //Xaxis in years
+        this.base.append("g")
+            .attr("transform", `translate(0, ${this.streamPos.y + this.streamSize.height - this.streamMargin.bottom})`)
+            .call(d3.axisBottom(xStream).ticks(this.years.length).tickFormat(d3.format("d")))
+        
+        //Yaxis in sales in millions
+        this.base.append("g")
+            .attr("transform", `translate(${this.streamPos.x + this.streamMargin.left}, 0)`)
+            .call(d3.axisLeft(yStream).ticks(5))
+
+
+        //Yaxis label
+        let yaxisx = this.streamPos.x + this.streamMargin.left - 40
+        let yaxisy = (this.streamPos.y + this.streamMargin.top + this.streamPos.y + this.streamSize.height - this.streamMargin.bottom) / 2
+        this.base.append("text")
+            .attr("x", yaxisx)
+            .attr("y", yaxisy)
+            .attr("font-size", "15px")
+            .attr("text-anchor", "middle")
+            .attr("transform-origin", `${yaxisx} ${yaxisy}`)
+            .attr("transform", "rotate(-90)")
+            .text("SALES (MILLIONS)")
+            
+        //Xaxis label
+        this.base.append("text")
+            .attr("x", (this.streamPos.x + this.streamMargin.left + this.streamPos.x + this.streamSize.width - this.streamMargin.right) / 2)
+            .attr("y", this.streamPos.y + this.streamSize.height - this.streamMargin.bottom + 50)
+            .attr("font-size", "15px")
+            .attr("text-anchor", "middle")
+            .text("YEAR")
+        
+        // graph label
+        this.base.append("text")
+            .attr("x", (this.streamPos.x + this.streamMargin.left + this.streamPos.x + this.streamSize.width - this.streamMargin.right) / 2)
+            .attr("y", this.streamPos.y + this.streamMargin.top - 30)
+            .attr("text-anchor", "middle")
+            .attr("font-weight","bold")
+            .text("Top Genre in North America Over Years")
+    }
+    
 
     drawRegion(region) {
         // Verify we have valid data before proceeding

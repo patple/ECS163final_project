@@ -26,6 +26,18 @@ d3.csv("./data/vgsales.csv").then(data => {
     streamgraph.calculateRegion("NA");
     streamgraph.drawRegion("NA");
 
+    
+    let genreGraph = new StreamGraph(c.base)
+    genreGraph.resizeStream({width: 1200, height: 500})
+    genreGraph.moveStream({x: 20, y: 200})
+    genreGraph.defineStreamMargins({top: 50, left: 100, bottom: 50, right: 50})
+    genreGraph.initDataset(data);
+    genreGraph.calculateGenre("NA");
+    genreGraph.drawGenre("NA");
+    
+   
+
+
     let slides = new Slider([a, b, c, d], 200, [-width, 0, width])
     d3.select("svg")
     .on("click", function() { slides.goNext(); })
