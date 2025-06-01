@@ -71,8 +71,8 @@ d3.csv("./data/vgsales.csv").then(data => {
             const region = button.dataset.region
             streamgraph.calculateRegion(region)
             streamgraph.drawRegion(region)
-            genreGraph.calculateRegion(region)
-            genreGraph.drawRegion(region)
+            genreGraph.calculateGenre(region)
+            genreGraph.drawGenre(region)
 
         })
         
