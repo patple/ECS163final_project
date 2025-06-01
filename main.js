@@ -65,9 +65,18 @@ d3.csv("./data/vgsales.csv").then(data => {
 
 
     // each butt action
-    document.getElementById('zoom-in')?.addEventListener('click', function() {
-        console.log('Zoom in clicked on stream graph');
-    });
+    const regionChange = document.querySelectorAll('#region-buttons button')
+    regionChange.forEach(button =>{
+        button.addEventListener('click', ()=>{
+            const region = button.dataset.region
+            streamgraph.calculateRegion(region)
+            streamgraph.drawRegion(region)
+            genreGraph.calculateRegion(region)
+            genreGraph.drawRegion(region)
+
+        })
+        
+    })
 })
 
 

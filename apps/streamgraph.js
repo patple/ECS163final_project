@@ -215,6 +215,8 @@ class StreamGraph {
     }
 
     drawGenre(region) {
+        
+        this.base.selectAll("*").remove()
         // Verify we have valid data before proceeding
         if (!this.genreStreamData[region] || this.genreStreamData[region].length === 0) {
             console.error("No valid data to display");
@@ -323,6 +325,8 @@ class StreamGraph {
     
 
     drawRegion(region) {
+
+        this.base.selectAll("*").remove()
         // Verify we have valid data before proceeding
         if (this.publisherStreamData[region].length === 0 || this.topPubs[region].length === 0) {
             console.error("No valid data to display");
