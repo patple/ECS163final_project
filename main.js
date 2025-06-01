@@ -12,7 +12,7 @@ let height = window.innerHeight;
 d3.csv("./data/vgsales.csv").then(data => {
     let a = new Slide(width, height)
     let b = testmakeSlide([0, height/2, width/2, height/2, "magenta"]);
-    let c = testmakeSlide([width/2, 0, width/2, height/2, "cyan"]);
+    let c = testmakeSlide([width/2, 0, width/2, height/2, "white"]);
     let d = testmakeSlide([width/2, height/2, width/2, height/2, "yellow"]);
 
     let streamgraph = new StreamGraph(a.base)
@@ -32,8 +32,8 @@ d3.csv("./data/vgsales.csv").then(data => {
     genreGraph.moveStream({x: 20, y: 200})
     genreGraph.defineStreamMargins({top: 50, left: 100, bottom: 50, right: 50})
     genreGraph.initDataset(data);
-    genreGraph.calculateGenre("NA");
-    genreGraph.drawGenre("NA");
+    genreGraph.calculateGenre("JP");
+    genreGraph.drawGenre("JP");
     
    
 

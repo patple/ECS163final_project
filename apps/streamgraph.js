@@ -16,7 +16,7 @@ class StreamGraph {
     years = null;
 
     genreSales ={ NA: null, JP : null, EU: null, Other: null, Global: null};
-    genreStreaemData = {NA: null, JP: null, EU: null, Other: null, Global: null};
+    genreStreamData = {NA: null, JP: null, EU: null, Other: null, Global: null};
     
     
     constructor(parent) {
@@ -202,7 +202,7 @@ class StreamGraph {
             .map(d => d[0])
         
         
-        this.genreStreaemData[region] = this.years.map(year => {
+        this.genreStreamData[region] = this.years.map(year => {
             let salesForYear = data.filter(d => d.Year == Number(year));
             let counts = {};
             this.topGenres[region].forEach(genre =>{
@@ -216,7 +216,7 @@ class StreamGraph {
 
     drawGenre(region) {
         // Verify we have valid data before proceeding
-        if (!this.genreStreaemData[region] || this.genreStreaemData[region].length === 0) {
+        if (!this.genreStreamData[region] || this.genreStreamData[region].length === 0) {
             console.error("No valid data to display");
             return;
         }
@@ -224,7 +224,7 @@ class StreamGraph {
             .offset(d3.stackOffsetWiggle)
             .order(d3.stackOrderInsideOut)
             .keys(this.topGenres[region])
-            (this.genreStreaemData[region])
+            (this.genreStreamData[region])
 
         const xStream = d3.scaleLinear()
             .domain(d3.extent(this.years))
@@ -242,7 +242,7 @@ class StreamGraph {
         
         const genreColors = d3.scaleOrdinal()
             .domain(this.topGenres[region])
-            .range(d3.schemeCategory10)
+            .range(d3.schemePaired)
 
         this.base.selectAll("path")
             .data(series)
@@ -290,7 +290,35 @@ class StreamGraph {
             .attr("y", this.streamPos.y + this.streamMargin.top - 30)
             .attr("text-anchor", "middle")
             .attr("font-weight","bold")
-            .text("Top Genre in North America Over Years")
+            .text(`Top Genre in ${region} Over Years`)
+
+
+        //creates a key for the graph
+        const key = this.base.append("g")
+            .attr("class", "key")
+            .attr("transform", `translate(${this.streamPos.x + this.streamSize.width}, ${this.streamPos.y + this.streamMargin.top})`)
+
+        const keySpacing = 30
+        const rectSize = 12
+
+        key.selectAll("g")
+            .data(this.topGenres[region])
+            .join("g")
+            .attr("transform", (d,i) => `translate(0, ${i * keySpacing})`)
+            .each(function(d){
+                d3.select(this)
+                    .append("rect")
+                    .attr("width", rectSize)
+                    .attr("height", rectSize)
+                    .attr("fill", genreColors(d))
+
+                d3.select(this)
+                    .append("text")
+                    .attr("x", rectSize +5)
+                    .attr("x", rectSize -2)
+                    .text(d)
+                    .attr("font-size", "12px")
+            })
     }
     
 
@@ -370,7 +398,35 @@ class StreamGraph {
             .attr("y", this.streamPos.y + this.streamMargin.top - 30)
             .attr("text-anchor", "middle")
             .attr("font-weight","bold")
-            .text("Publisher Sales in North America Over Years")
+            .text(`Publisher Sales in ${region} Over Years`)
+
+        //creates a key for the graph
+        const key = this.base.append("g")
+            .attr("class", "key")
+            .attr("transform", `translate(${this.streamPos.x + this.streamSize.width}, ${this.streamPos.y + this.streamMargin.top})`)
+
+        const keySpacing = 30
+        const rectSize = 12
+
+        key.selectAll("g")
+            .data(this.topPubs[region])
+            .join("g")
+            .attr("transform", (d,i) => `translate(0, ${i * keySpacing})`)
+            .each(function(d){
+                d3.select(this)
+                    .append("rect")
+                    .attr("width", rectSize)
+                    .attr("height", rectSize)
+                    .attr("fill", publishersColors(d))
+
+                d3.select(this)
+                    .append("text")
+                    .attr("x", rectSize +5)
+                    .attr("x", rectSize -2)
+                    .text(d)
+                    .attr("font-size", "12px")
+            })
+        
     }
 }
 
