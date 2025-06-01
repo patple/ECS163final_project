@@ -10,10 +10,10 @@ let height = window.innerHeight;
 
 
 d3.csv("./data/vgsales.csv").then(data => {
-    let a = testmakeSlide([width/2, 0, width/2, height/2, "white"]);
+    let a = testmakeSlide([width/2, 0, width/2, height/2, " rgb(202, 202, 202)"]);
     let b = new Slide(width, height)
-    let c = testmakeSlide([width/2, 0, width/2, height/2, "white"]);
-    let d = testmakeSlide([width/2, height/2, width/2, height/2, "yellow"]);
+    let c = testmakeSlide([width/2, 0, width/2, height/2, " rgb(202, 202, 202)"]);
+    let d = testmakeSlide([width/2, height/2, width/2, height/2, " rgb(202, 202, 202)"]);
 
     let streamgraph = new StreamGraph(b.base)
     //console.log(Object.keys({width: 500, height: 500}))
