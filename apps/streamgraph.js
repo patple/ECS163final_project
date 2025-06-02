@@ -363,7 +363,12 @@ class StreamGraph {
             .attr("class", "stream-colors")
             .attr("d", area)
             .append("title")
-            .text(d =>`${d.key}: ${(d[d.length - 1][1] - d[d.length -1][0]).toFixed(2)}M` )
+            .text(d =>{
+                const values = d.reduce((acc, p) => acc + (p[1]-p[0]),0)
+                return `${d.key}: ${values.toFixed(2)}M`
+            
+            } )
+            //.text(d =>`${d.key}: ${(d[d.length - 1][1] - d[d.length -1][0]).toFixed(2)}M` )
 
         //Xaxis in years
         this.base.append("g")

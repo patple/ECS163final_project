@@ -15,6 +15,7 @@ d3.csv("./data/vgsales.csv").then(data => {
     let c = testmakeSlide([width/2, 0, width/2, height/2, " rgb(202, 202, 202)"]);
     let d = testmakeSlide([width/2, height/2, width/2, height/2, " rgb(202, 202, 202)"]);
 
+
     let streamgraph = new StreamGraph(b.base)
     //console.log(Object.keys({width: 500, height: 500}))
     streamgraph.resizeStream({width: 1200, height: 500})
@@ -63,6 +64,12 @@ d3.csv("./data/vgsales.csv").then(data => {
     // int display
     updateOverlays(slides.currentIndex);
 
+    const insights = document.querySelectorAll(".insights")
+    function displayInsight(region){
+        insights.forEach(insight=>{
+            insight.style.display = insight.dataset.region === region ? "block" : "none"
+        })
+    }
 
     // each butt action
     const regionChange = document.querySelectorAll('#region-buttons button')
@@ -73,6 +80,8 @@ d3.csv("./data/vgsales.csv").then(data => {
             streamgraph.drawRegion(region)
             genreGraph.calculateGenre(region)
             genreGraph.drawGenre(region)
+
+           displayInsight(region)
 
         })
         
