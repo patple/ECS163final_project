@@ -3,6 +3,7 @@ import Slider from "./apps/slideAPI.js"
 import Slide from "./apps/slides/slideTemplate.js"
 import StreamGraph from "./apps/streamgraph.js"
 import testmakeSlide from "./apps/testmakeslide.js"
+import BarGraph from "./apps/bargraph.js"
 
 let width = window.innerWidth;
 let height = window.innerHeight;
@@ -35,6 +36,16 @@ d3.csv("./data/vgsales.csv").then(data => {
     genreGraph.initDataset(data);
     genreGraph.calculateGenre("JP");
     genreGraph.drawGenre("JP");
+
+
+    let searchGraph = new BarGraph(d.base)
+    searchGraph.resizeBar({width: 1200, height: 500})
+    searchGraph.moveBar({x: 20, y: 200})
+    searchGraph.defineBarMargins({top: 50, left: 100, bottom: 50, right: 50})
+    // this will be here untill the search is done 
+    const placeHolderGame = data.find(d =>d.Name === "Wii Sports")
+    searchGraph.drawSearchGame(placeHolderGame)
+
     
    
 
@@ -71,7 +82,7 @@ d3.csv("./data/vgsales.csv").then(data => {
         })
     }
 
-    // each butt action
+    // each button action
     const regionChange = document.querySelectorAll('#region-buttons button')
     regionChange.forEach(button =>{
         button.addEventListener('click', ()=>{
