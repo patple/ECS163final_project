@@ -19,7 +19,7 @@ class StreamGraph {
     genreStreamData = {NA: null, JP: null, EU: null, Other: null, Global: null};
     
     // Add transition properties
-    transitionDuration = 1000;
+    transitionDuration = 875;
     currentView = null; // 'publisher' or 'genre'
     currentRegion = null;
     

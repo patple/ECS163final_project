@@ -126,7 +126,7 @@ class BarGraph {
             .attr("y", this.barPos.y + this.barMargin.top - 30)
             .attr("text-anchor", "middle")
             .attr("font-weight","bold")
-            .text(`Stats About Your Game ${gameData}`)
+            .text(`Stats About ${gameData.Name}`)
             
     }
         
