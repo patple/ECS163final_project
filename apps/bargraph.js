@@ -119,6 +119,14 @@ class BarGraph {
             .attr("font-size", "15px")
             .attr("text-anchor", "middle")
             .text("SALES (MILLIONS)")
+
+        //graph label
+        this.base.append("text")
+            .attr("x", (this.barPos.x + this.barMargin.left + this.barPos.x + this.barSize.width - this.barMargin.right) / 2)
+            .attr("y", this.barPos.y + this.barMargin.top - 30)
+            .attr("text-anchor", "middle")
+            .attr("font-weight","bold")
+            .text(`Stats About Your Game ${gameData}`)
             
     }
         
