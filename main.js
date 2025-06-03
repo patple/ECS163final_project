@@ -47,6 +47,11 @@ d3.csv("./data/vgsales.csv").then(data => {
     const searchInput = document.getElementById("game-search-input")
     const searchButton = document.getElementById("game-search-button")
     const searchError = document.getElementById("search-error")
+    const autoList = document.getElementById("auto-fill")
+
+    function clearAutoList(){
+        autoList.innerHTML = ""
+    }
 
     function searchGame(gameName){
         const matchedGames = data.filter(d=> d.Name.toLowerCase().includes(gameName.toLowerCase()))
@@ -56,27 +61,69 @@ d3.csv("./data/vgsales.csv").then(data => {
             searchGraph.drawSearchGame(matchedGames[0])
         } else if (matchedGames.length > 1){
             searchError.style.display = "none"
-
             searchGraph.drawSearchGame(matchedGames[0])
+            clearAutoList()
+
         }else{
             searchError.style.display= "block"
+            clearAutoList()
         }
     }
 
+
+    //function that creates the auto fill list
+    function autoFill(input){
+        clearAutoList()
+
+        if(!input) return;
+        const autoMatch = data.filter(d=> d.Name.toLowerCase().startsWith(input.toLowerCase()))
+
+        if (autoMatch.length === 0){
+            searchError.style.display= "block"
+            return 
+        } else{
+            searchError.style.display= "none"
+        }
+
+        autoMatch.slice(0,10).forEach(match =>{
+            const item = document.createElement("div")
+            item.classList.add("auto-item")
+            item.textContent = match.Name
+            
+            item.addEventListener("click", ()=>{
+                searchInput.value = match.Name
+                searchGame(match.Name)
+                clearAutoList()
+            })
+            autoList.append(item)
+        })
+    }
+
     searchButton.addEventListener('click',()=>{
-        const gameName = searchInput.ariaValueMax.trim();
+        const gameName = searchInput.value.trim();
         if(gameName.length > 0){
             searchGame(gameName)
         }
     })
 
+    // went the Enter key is pressed searc hthe game
     searchInput.addEventListener('keydown',(event)=>{
         if(event.key === 'Enter'){
-            const gameName = searchInput.value.trim()
+            const gameName = event.target.value.trim()
+            autoFill(gameName)
             if(gameName.length > 0){
                 searchGame(gameName)
+                clearAutoList()
             }
         }
+    
+    
+    })
+
+    //displays the autofill list when a game is searched
+     searchInput.addEventListener('input',(event)=>{
+        const inputGame = event.target.value.trim()
+        autoFill(inputGame)
     })
     //const placeHolderGame = data.find(d =>d.Name === "Wii Sports")
     //searchGraph.drawSearchGame(placeHolderGame)

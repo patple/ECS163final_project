@@ -40,3 +40,14 @@ html,body{
     height: 100%;
     width: 100%;
 }
+
+.auto-fill-list{
+    position: absolute;
+    border: 1px solid black;
+    border-bottom: none;
+    border-top: none;
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: white;
+    width: 200px;
+}
