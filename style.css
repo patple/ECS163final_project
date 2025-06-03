@@ -49,7 +49,7 @@ html,body{
     max-height: 150px;
     overflow-y: auto;
     background-color: white;
-    width: 200px;
+    width: 50%;
 }
 .bar-graph-text{
     max-width: 400px;
@@ -61,4 +61,22 @@ html,body{
     text-align: center;
     justify-items: center;
     display: none;
+    transform: translateX(350px);
 }
+
+.bar-info{
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.bar-graph-wrapper{
+    display: flex;
+    flex-direction: row;
+    gap:25px;
+    align-items: flex-start;
+    margin: 1rem auto;
+    width: 100%;
+    max-width: 700px;
+}
+
