@@ -384,7 +384,7 @@ class StreamGraph {
             `Publisher Sales in ${region} Over Years` : 
             `Top Genre in ${region} Over Years`;
 
-        this.base.select("text") // Assuming first text is the title
+        this.base.select(".graph-title") // Target the specific title element
             .transition(transition)
             .style("opacity", 0)
             .on("end", function() {
@@ -393,7 +393,7 @@ class StreamGraph {
                     .transition()
                     .duration(500)
                     .style("opacity", 1);
-            });
+        });
 
         // Update legend
         const key = this.base.select(".key");
@@ -539,6 +539,7 @@ class StreamGraph {
         
         // graph label
         this.base.append("text")
+            .attr("class", "graph-title")
             .attr("x", (this.streamPos.x + this.streamMargin.left + this.streamPos.x + this.streamSize.width - this.streamMargin.right) / 2)
             .attr("y", this.streamPos.y + this.streamMargin.top - 30)
             .attr("text-anchor", "middle")
@@ -655,6 +656,7 @@ class StreamGraph {
         
         // graph label
         this.base.append("text")
+            .attr("class", "graph-title")
             .attr("x", (this.streamPos.x + this.streamMargin.left + this.streamPos.x + this.streamSize.width - this.streamMargin.right) / 2)
             .attr("y", this.streamPos.y + this.streamMargin.top - 30)
             .attr("text-anchor", "middle")
