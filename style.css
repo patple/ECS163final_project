@@ -51,3 +51,14 @@ html,body{
     background-color: white;
     width: 200px;
 }
+.bar-graph-text{
+    max-width: 400px;
+    margin: 1rem auto;
+    flex-direction: row;
+    background-color: #DFD3CC;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    justify-items: center;
+    display: none;
+}

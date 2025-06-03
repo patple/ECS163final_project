@@ -127,6 +127,20 @@ class BarGraph {
             .attr("text-anchor", "middle")
             .attr("font-weight","bold")
             .text(`Stats About ${gameData.Name}`)
+
+        const barGraphInfo = document.getElementById("bar-graph-info")
+        barGraphInfo.style.display = "block"
+        const infoText = `
+            <h1>About Your Game: ${gameData.Name}</h1>
+            <p>Platform: ${gameData.Platform}</p>
+            <p>Publisher: ${gameData.Publisher}</p>
+            <p>Release Year: ${gameData.Year}</p>
+            <p>Global Sales: ${gameData.Global_Sales}M</p>
+            <p>North American Sales: ${gameData.NA_Sales}M</p>
+            <p>European Sales: ${gameData.EU_Sales}M</p>
+            <p>Japanese Sales: ${gameData.JP_Sales}M</p>
+            <p>Other Countries Sales: ${gameData.Other_Sales}M</p>`
+        barGraphInfo.innerHTML = infoText
             
     }
         
