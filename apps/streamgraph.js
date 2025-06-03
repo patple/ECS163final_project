@@ -553,7 +553,14 @@ class StreamGraph {
 
         const keySpacing = 30
         const rectSize = 12
-
+        
+        const totalSalesPerGenre = {}
+        series.forEach(d=>{
+            const total = d.reduce((acc,p) => acc + (p[1] - p[0]), 0)
+            totalSalesPerGenre[d.key] = total
+        })
+        
+        
         key.selectAll("g")
             .data(this.topGenres[region])
             .join("g")
@@ -570,6 +577,13 @@ class StreamGraph {
                     .attr("x", rectSize +5)
                     .attr("y", rectSize -2)
                     .text(d)
+                    .attr("font-size", "12px")
+
+                d3.select(this)
+                    .append("text")
+                    .attr("x", rectSize +5 + 155)
+                    .attr("y", rectSize -2)
+                    .text(`${totalSalesPerGenre[d].toFixed(2)}M Total Sale`)
                     .attr("font-size", "12px")
             })
 
@@ -670,7 +684,12 @@ class StreamGraph {
 
         const keySpacing = 30
         const rectSize = 12
-
+        
+        const totalSalesPerPub = {}
+        series.forEach(d=>{
+            const total = d.reduce((acc,p) => acc + (p[1] - p[0]), 0)
+            totalSalesPerPub[d.key] = total
+        })
         key.selectAll("g")
             .data(this.topPubs[region])
             .join("g")
@@ -688,6 +707,14 @@ class StreamGraph {
                     .attr("y", rectSize -2)
                     .text(d)
                     .attr("font-size", "12px")
+                
+                d3.select(this)
+                    .append("text")
+                    .attr("x", rectSize +5 + 155)
+                    .attr("y", rectSize -2)
+                    .text(`${totalSalesPerPub[d].toFixed(2)}M Total Sale`)
+                    .attr("font-size", "12px")
+                
             })
 
         // Update current state
