@@ -43,8 +43,43 @@ d3.csv("./data/vgsales.csv").then(data => {
     searchGraph.moveBar({x: 20, y: 200})
     searchGraph.defineBarMargins({top: 50, left: 100, bottom: 50, right: 50})
     // this will be here untill the search is done 
-    const placeHolderGame = data.find(d =>d.Name === "Wii Sports")
-    searchGraph.drawSearchGame(placeHolderGame)
+
+    const searchInput = document.getElementById("game-search-input")
+    const searchButton = document.getElementById("game-search-button")
+    const searchError = document.getElementById("search-error")
+
+    function searchGame(gameName){
+        const matchedGames = data.filter(d=> d.Name.toLowerCase().includes(gameName.toLowerCase()))
+
+        if(matchedGames.length === 1){
+            searchError.style.display = "none"
+            searchGraph.drawSearchGame(matchedGames[0])
+        } else if (matchedGames.length > 1){
+            searchError.style.display = "none"
+
+            searchGraph.drawSearchGame(matchedGames[0])
+        }else{
+            searchError.style.display= "block"
+        }
+    }
+
+    searchButton.addEventListener('click',()=>{
+        const gameName = searchInput.ariaValueMax.trim();
+        if(gameName.length > 0){
+            searchGame(gameName)
+        }
+    })
+
+    searchInput.addEventListener('keydown',(event)=>{
+        if(event.key === 'Enter'){
+            const gameName = searchInput.value.trim()
+            if(gameName.length > 0){
+                searchGame(gameName)
+            }
+        }
+    })
+    //const placeHolderGame = data.find(d =>d.Name === "Wii Sports")
+    //searchGraph.drawSearchGame(placeHolderGame)
 
     
    
