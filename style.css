@@ -18,19 +18,18 @@
 
 .text-box{
       max-width: 400px;
-      margin: 1rem auto;
       flex-direction: row;
       background-color: #DFD3CC;
       border-radius: 10px;
       padding: 1rem;
       text-align: center;
-      justify-items: center;
     }
 
 .text-box-wrapper{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: grid;
+    gap: 1rem;
+    justify-items: center;
+    grid-template-columns: repeat(2,1fr);
     }
 
 html,body{
