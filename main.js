@@ -15,6 +15,7 @@ d3.csv("./data/vgsales.csv").then(data => {
     let b = new Slide(width, height)
     let c = testmakeSlide([width/2, 0, width/2, height/2, " rgb(202, 202, 202)"]);
     let d = testmakeSlide([width/2, height/2, width/2, height/2, " rgb(202, 202, 202)"]);
+    let e = testmakeSlide([width/2, height/2, width/2, height/2, " rgb(202, 202, 202)"]);
 
 
     let streamgraph = new StreamGraph(b.base)
@@ -132,7 +133,7 @@ d3.csv("./data/vgsales.csv").then(data => {
    
 
 
-    let slides = new Slider([a, b, c, d], 200, [-width, 0, width])
+    let slides = new Slider([a, b, c, d, e], 200, [-width, 0, width])
     d3.select("svg")
     .on("click", function() { slides.goNext(); })
     .on("contextmenu", function() { 
