@@ -39,7 +39,7 @@ d3.csv("./data/vgsales.csv").then(data => {
     genreGraph.drawGenre("JP");
 
 
-    let searchGraph = new BarGraph(d.base)
+    let searchGraph = new BarGraph(e.base)
     searchGraph.resizeBar({width: 1200, height: 500})
     searchGraph.moveBar({x: 20, y: 200})
     searchGraph.defineBarMargins({top: 50, left: 100, bottom: 50, right: 50})
