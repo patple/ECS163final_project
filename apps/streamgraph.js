@@ -306,7 +306,6 @@ class StreamGraph {
                 // Fade in new paths
                 paths.merge(newPaths)
                     .transition()
-                    .duration(this.transitionDuration / 2)
                     .style("opacity", 1);
             });
 
@@ -359,61 +358,27 @@ class StreamGraph {
                 d3.select(this)
                     .text(titleText)
                     .transition()
-                    .duration(500)
                     .style("opacity", 1);
         });
 
         // Update legend
         // Redraw Keys
-        this.base.select("g.key").remove();
-        this.drawKeys(stream);
-        
-        const key = this.base.select(".key")
-        key.selectAll("g")
+        this.base.select("g.key")
             .transition(transition)
             .style("opacity", 0)
-            .on("end", () => {
-                const keySpacing = 30;
-                const rectSize = 12;
-                console.log()
-
-                const legendGroups = key.selectAll("g")
-                    .data(stream.keys, d => d);
-
-                legendGroups.exit().remove();
-
-                const newGroups = legendGroups.enter()
-                    .append("g")
-                    .style("opacity", 0);
-
-                legendGroups.merge(newGroups)
-                    .attr("transform", (d, i) => `translate(0, ${i * keySpacing})`)
-                    .each(function(d) {
-                        const group = d3.select(this);
-                        
-                        // Update or add rectangle
-                        let rect = group.select("rect");
-                        if (rect.empty()) {
-                            rect = group.append("rect");
-                        }
-                        rect.attr("width", rectSize)
-                            .attr("height", rectSize)
-                            .attr("fill", stream.colors(d));
-
-                        // Update or add text
-                        let text = group.select("text");
-                        if (text.empty()) {
-                            text = group.append("text");
-                        }
-                        text.attr("x", rectSize + 5)
-                            .attr("y", rectSize - 2)
-                            .text(d)
-                            .attr("font-size", "12px");
-                    })
-                    .transition()
-                    .duration(500)
-                    .style("opacity", 1);
+            .on("end", function(){
+                this.remove();
             });
+        
+        this.drawKeys(stream)
+            .style("opacity", 0)
+            .transition(transition)
+            .on("end", function(){
+                d3.select(this)
+                    .transition()
+                    .style("opacity", 1)
+            })
+        
     }
 
     /**
@@ -467,6 +432,11 @@ class StreamGraph {
         this.currentRegion = region;
     }
 
+    /**
+     * Draws the legend.
+     * @param {*} stream 
+     * @returns 
+     */
     drawKeys(stream) {
         const key = this.base.append("g")
             .attr("class", "key")
@@ -505,7 +475,13 @@ class StreamGraph {
     }
 
 
-    
+    /**
+     * 
+     * @param {*} xStream 
+     * @param {*} yStream 
+     * @param {*} viewType 
+     * @param {*} region 
+     */
     drawAxis(xStream, yStream, viewType, region) {
         //Xaxis in years
         this.base.append("g")
@@ -558,10 +534,16 @@ class StreamGraph {
             }})
     }
 
+
+    /**
+     * Calculates and returns an object with all needed componenets to
+     * display a streamgraph.
+     * @param {String} region - Region code (NA, JP, EU, Other, Global)
+     * @param {String} viewType 
+     * @returns 
+     */
     getStream(region, viewType) {
         // Get new data and scales
-        console.log(this.topPubs)
-        console.log(this.topGenres)
         const newData = viewType === 'publisher' ? 
             this.publisherStreamData[region] : 
             this.genreStreamData[region];
