@@ -18,22 +18,24 @@ d3.csv("./data/vgsales.csv").then(data => {
     
 
     let streamgraph = new StreamGraph(b.base)
-    streamgraph.resizeStream({width: 0.7 * width, height: 0.45 * height})
-    streamgraph.moveStream({x: 0.1 * width, y: 0.22 * height})
-    streamgraph.defineStreamMargins({top: 50, left: 0, bottom: 50, right: 100})
+    streamgraph.resizeWindow({width: 0.8 * width, height: 0.45 * height});
+    streamgraph.moveStream({x: 0.1 * width, y: 0.22 * height});
+    streamgraph.setStream();
+    streamgraph.defineStreamMargins({top: 50, left: 0, bottom: 50, right: 50})
 
     streamgraph.initDataset(data);
     streamgraph.calculateRegion("NA");
-    streamgraph.drawRegion("NA");
+    streamgraph.drawRegion("NA", "Publisher");
 
     
     let genreGraph = new StreamGraph(c.base)
-    genreGraph.resizeStream({width: 0.7 * width, height: 0.45 * height})
-    genreGraph.moveStream({x: 0.1 * width, y: 0.22 * height})
-    genreGraph.defineStreamMargins({top: 50, left: 0, bottom: 50, right: 100})
+    genreGraph.resizeWindow({width: 0.8 * width, height: 0.45 * height});
+    genreGraph.moveStream({x: 0.1 * width, y: 0.22 * height});
+    genreGraph.setStream();
+    genreGraph.defineStreamMargins({top: 50, left: 0, bottom: 50, right: 50})
     genreGraph.initDataset(data);
-    genreGraph.calculateGenre("JP");
-    genreGraph.drawGenre("JP");
+    genreGraph.calculateGenre("NA");
+    genreGraph.drawRegion("NA", "Genre")
 
 
     let searchGraph = new BarGraph(e.base)
@@ -186,8 +188,8 @@ d3.csv("./data/vgsales.csv").then(data => {
         button.addEventListener('click', ()=>{
             const region = button.dataset.region
             
-            streamgraph.transitionTo(region, 'publisher')
-            genreGraph.transitionTo(region, 'genre')
+            streamgraph.transitionTo(region, 'Publisher')
+            genreGraph.transitionTo(region, 'Genre')
 
            displayInsight(region)
 
