@@ -47,7 +47,6 @@ class Button {
         this.buttonSize = buttonSize;
         this.buttonColor = buttonColor;
         this.clickColor = clickColor;
-        console.log(this.clickColor)
         this.border = border;
         this.button = this.base.append("rect");
     }
