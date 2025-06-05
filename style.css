@@ -18,7 +18,7 @@
 
 .text-box{
       max-width: 35vw;
-      max-height: 50vh;
+      max-height: 90vh;
       flex-direction: row;
       background-color: #ebeedc;
       border-radius: 10px;
