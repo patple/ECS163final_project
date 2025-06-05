@@ -131,26 +131,30 @@ d3.csv("./data/vgsales.csv").then(data => {
 
     let prevButton = new Button(d3.select("svg"))
     prevButton.hide()
+    
+    prevButton.defineRectangle({width: width / 8, height: height / 8}, "steelblue", {width: 3, color: "midnightblue"}, "midnightblue");
+    prevButton.drawRectangle();
     prevButton.assignFunction(function(){
         slides.goPrev(); 
     })
     prevButton.base.on("update", function(){
         slides.getIndex() == 0 ? prevButton.hide() : prevButton.show();
     })
-    prevButton.defineRectangle({width: width / 8, height: height / 8}, "steelblue", {width: 3, color: "midnightblue"});
-    prevButton.drawRectangle();
+    prevButton.defineText("white", 36, "black", 0);
+    prevButton.drawText("BACK");
 
     let nextButton = new Button(d3.select("svg"))
-    
+    nextButton.move(0, height / 5)
+    nextButton.defineRectangle({width: width / 8, height: height / 8}, "steelblue", {width: 3, color: "midnightblue"}, "midnightblue");
+    nextButton.drawRectangle();
     nextButton.assignFunction(function(){
         slides.goNext(); 
     })
     nextButton.base.on("update", function(){
         slides.getIndex() >= slides.getLength() - 1 ? nextButton.hide() : nextButton.show();
     })
-    nextButton.move(0, height / 5)
-    nextButton.defineRectangle({width: width / 8, height: height / 8}, "steelblue", {width: 3, color: "midnightblue"});
-    nextButton.drawRectangle();
+    nextButton.defineText("white", 36, "black", 0);
+    nextButton.drawText("NEXT");
 
 
     // Controls the display of all overlays

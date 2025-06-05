@@ -5,6 +5,7 @@ class Button {
     parent = null;
     base = null;
     button = null;
+    clickOverlay = null;
 
     buttonSize = {width: 0, height: 0};
     buttonColor = "";
@@ -24,7 +25,16 @@ class Button {
      * @param {*} args 
      */
     assignFunction(func) {
-        this.base.on("click", func);
+        this.base.on("mousedown", function(a, e, o){
+            func();
+            d3.select(this).select("#clickOverlay").attr("fill-opacity", 0.4);
+        })
+        this.base.on("mouseup", function() {
+            d3.select(this).select("#clickOverlay").attr("fill-opacity", 0);
+        });
+        this.base.on("mouseout", function() {
+            d3.select(this).select("#clickOverlay").attr("fill-opacity", 0);
+        });
     }
 
     /**
@@ -33,10 +43,13 @@ class Button {
      * @param {String} buttonColor - HTML color string
      * @param {Object} border - Object with fields width, color
      */
-    defineRectangle(buttonSize, buttonColor, border) {
+    defineRectangle(buttonSize, buttonColor, border, clickColor) {
         this.buttonSize = buttonSize;
         this.buttonColor = buttonColor;
+        this.clickColor = clickColor;
+        console.log(this.clickColor)
         this.border = border;
+        this.button = this.base.append("rect");
     }
 
 
@@ -44,29 +57,45 @@ class Button {
      * Draws button rect based on assigned characteristics.
      */
     drawRectangle() {
-        this.button = this.base.append("rect")
+        this.button
             .attr("width", this.buttonSize.width)
-            .attr("height", this. buttonSize.height)
-            .attr("x", this.buttonSize.width / 2)
-            .attr("y", this.buttonSize.height / 2)
+            .attr("height", this.buttonSize.height)
+            .attr("x", -this.buttonSize.width / 2)
+            .attr("y", -this.buttonSize.height / 2)
             .attr("fill", this.buttonColor)
             .attr("stroke", this.border.color)
             .attr("stroke-width", `${this.border.width}px`);
+        this.clickOverlay = this.base.append("rect")
+            .attr("width", this.buttonSize.width)
+            .attr("width", this.buttonSize.width)
+            .attr("height", this.buttonSize.height)
+            .attr("x", -this.buttonSize.width / 2)
+            .attr("y", -this.buttonSize.height / 2)
+            .attr("fill", "black")
+            .attr("fill-opacity", 0)
+            .attr("id", "clickOverlay");
     }
 
     /**
      * Defines text
      * @param {String} textCol - HTML color string
      * @param {Number} fontSize - Font size
+     * @param {String} strokeCol
+     * @param {Number} strokeWidth
      */
-    defineText(textCol, fontSize) {
-        if (this.text = null) {
+    defineText(textCol, fontSize, strokeCol, strokeWidth) {
+        if (this.text === null) {
             this.text = this.base.append("text");
         }
 
-        this.text.attr("font-size", fontSize)
+        this.text.attr("font-size", `${fontSize}px`)
             .attr("fill", textCol)
-            .attr("text-anchor", center);
+            .attr("text-anchor", "middle")
+            .attr("font-weight", 800)
+            .attr("stroke", strokeCol)
+            .attr("stroke-width", strokeWidth)
+            .attr("transform", `translate(0, ${fontSize / 3})`)
+            .attr("pointer-events", "none");
     }
 
     /**
