@@ -8,6 +8,8 @@ class StreamGraph {
     streamMargin = {top: 0, right: 0, bottom: 0, left: 0};
     streamSize = {width: 0, height: 0};
 
+    legendSize = {}
+
     
     pubColors = d3.schemeCategory10;
     topPubs = {NA: null, JP: null, EU: null, Other: null, Global: null};
@@ -256,42 +258,7 @@ class StreamGraph {
         const t = d3.transition().duration(this.transitionDuration);
         
         // Get new data and scales
-        const newData = viewType === 'publisher' ? 
-            this.publisherStreamData[region] : 
-            this.genreStreamData[region];
-        
-        const newKeys = viewType === 'publisher' ? 
-            this.topPubs[region] : 
-            this.topGenres[region];
-
-        if (!newData || newData.length === 0 || !newKeys || newKeys.length === 0) {
-            console.error("No valid data for transition");
-            return;
-        }
-
-        const newSeries = d3.stack()
-            .offset(d3.stackOffsetWiggle)
-            .order(d3.stackOrderInsideOut)
-            .keys(newKeys)
-            (newData);
-
-        const xStream = d3.scaleLinear()
-            .domain(d3.extent(this.years))
-            .range([this.streamPos.x + this.streamMargin.left, this.streamPos.x + this.streamSize.width - this.streamMargin.right]);
-        
-        const yStream = d3.scaleLinear()
-            .domain([d3.min(newSeries, d => d3.min(d, d => d[0])), d3.max(newSeries, d => d3.max(d, d => d[1]))])
-            .range([this.streamPos.y + this.streamSize.height - this.streamMargin.bottom, this.streamPos.y + this.streamMargin.top]);
-        
-        const area = d3.area()
-            .x(d => xStream(d.data.Year))
-            .y0(d => yStream(d[0]))
-            .y1(d => yStream(d[1]))
-            .curve(d3.curveBasis);
-
-        const newColors = d3.scaleOrdinal()
-            .domain(newKeys)
-            .range(viewType === 'publisher' ? d3.schemeCategory10 : d3.schemePaired);
+        const stream = this.getStream(region, viewType);
 
         // Phase 1: Fade out current elements
         this.base.selectAll("path.stream-colors")
@@ -300,7 +267,7 @@ class StreamGraph {
             .on("end", () => {
                 // Phase 2: Update data and fade in new elements
                 const paths = this.base.selectAll("path.stream-colors")
-                    .data(newSeries, d => d.key);
+                    .data(stream.series, d => d.key);
 
                 // Remove old paths
                 paths.exit().remove();
@@ -313,8 +280,8 @@ class StreamGraph {
 
                 // Update all paths
                 paths.merge(newPaths)
-                    .attr("fill", d => newColors(d.key))
-                    .attr("d", area)
+                    .attr("fill", d => stream.colors(d.key))
+                    .attr("d", stream.area)
                     .select("title")
                     .text(d => {
                         if (viewType === 'publisher') {
@@ -348,10 +315,10 @@ class StreamGraph {
             });
 
             // Update title and legend
-                this.updateTitleAndLegend(region, viewType, newKeys, newColors, t);
+            this.updateTitleAndLegend(region, viewType, stream.keys, stream.colors, t);
 
         // Update axes immediately
-        this.updateAxes(xStream, yStream, t);
+        this.updateAxes(stream.xStream, stream.yStream, t);
     }
 
     /**
@@ -466,201 +433,78 @@ class StreamGraph {
             .transition(transition)
             .call(d3.axisLeft(yScale).ticks(5));
     }
-
-
-    /**
-     * Draws the genre streamgraph for the desired region
-     * @param {String} region - Region code (NA, JP, EU, Other, Global)
-     * @returns 
-     */
-    drawGenre(region) {
-        this.base.selectAll("*").remove()
-        // Verify we have valid data before proceeding
-        if (!this.genreStreamData[region] || this.genreStreamData[region].length === 0) {
-            console.error("No valid data to display");
-            return;
-        }
-        const series = d3.stack()
-            .offset(d3.stackOffsetWiggle)
-            .order(d3.stackOrderInsideOut)
-            .keys(this.topGenres[region])
-            (this.genreStreamData[region])
-
-        const xStream = d3.scaleLinear()
-            .domain(d3.extent(this.years))
-            .range([this.streamPos.x + this.streamMargin.left, this.streamPos.x + this.streamSize.width - this.streamMargin.right])
-        
-        const yStream = d3.scaleLinear()
-            .domain([d3.min(series, d => d3.min(d, d => d[0])), d3.max(series, d => d3.max(d, d => d[1]))])
-            .range([this.streamPos.y + this.streamSize.height - this.streamMargin.bottom, this.streamPos.y + this.streamMargin.top])
-        
-        const area = d3.area()
-            .x(d => xStream(d.data.Year))
-            .y0(d => yStream(d[0]))
-            .y1(d => yStream(d[1]))
-            .curve(d3.curveBasis)
-        
-        const genreColors = d3.scaleOrdinal()
-            .domain(this.topGenres[region])
-            .range(d3.schemePaired)
-
-        this.base.selectAll("path")
-            .data(series)
-            .join("path")
-            .attr("fill", d => genreColors(d.key))
-            .attr("class", "stream-colors")
-            .attr("d", area)
-            .append("title")
-            .text(d =>{
-                const values = d.reduce((acc, p) => acc + (p[1]-p[0]),0)
-                return `${d.key}: ${values.toFixed(2)}M`
-            })
-
-        //Xaxis in years
-        this.base.append("g")
-            .attr("class", "x-axis")
-            .attr("transform", `translate(0, ${this.streamPos.y + this.streamSize.height - this.streamMargin.bottom})`)
-            .call(d3.axisBottom(xStream).ticks(this.years.length).tickFormat(d3.format("d")))
-        
-        //Yaxis in sales in millions
-        this.base.append("g")
-            .attr("class", "y-axis")
-            .attr("transform", `translate(${this.streamPos.x + this.streamMargin.left}, 0)`)
-            .call(d3.axisLeft(yStream).ticks(5))
-            .selectAll("text").text(d => Math.abs(d))
-
-        //Yaxis label
-        let yaxisx = this.streamPos.x + this.streamMargin.left - 40
-        let yaxisy = (this.streamPos.y + this.streamMargin.top + this.streamPos.y + this.streamSize.height - this.streamMargin.bottom) / 2
-        this.base.append("text")
-            .attr("x", yaxisx)
-            .attr("y", yaxisy)
-            .attr("font-size", "22px")
-            .attr("text-anchor", "middle")
-            .attr("transform-origin", `${yaxisx} ${yaxisy}`)
-            .attr("transform", "rotate(-90)")
-            .text("SALES (MILLIONS)")
-            
-        //Xaxis label
-        this.base.append("text")
-            .attr("x", (this.streamPos.x + this.streamMargin.left + this.streamPos.x + this.streamSize.width - this.streamMargin.right) / 2)
-            .attr("y", this.streamPos.y + this.streamSize.height - this.streamMargin.bottom + 50)
-            .attr("font-size", "22px")
-            .attr("text-anchor", "middle")
-            .text("YEAR")
-        
-        // graph label
-        this.base.append("text")
-            .attr("class", "graph-title")
-            .attr("x", (this.streamPos.x + this.streamMargin.left + this.streamPos.x + this.streamSize.width - this.streamMargin.right) / 2)
-            .attr("y", this.streamPos.y + this.streamMargin.top - 30)
-            .attr("font-size", "30px")
-            .attr("text-anchor", "middle")
-            .attr("font-weight","bold")
-            .text(function(){switch(region){
-                case "Other":
-                    return `Genre Sales in ${region} Regions Over the Years`
-                case "Global":
-                    return "Genre Sales Globally Over the Years"
-                default:
-                    return `Genre Sales in the ${region} Region Over the Years`
-
-            }})
-
-        //creates a key for the graph
-        const key = this.base.append("g")
-            .attr("class", "key")
-            .attr("transform", `translate(${this.streamPos.x + this.streamSize.width}, ${this.streamPos.y + this.streamMargin.top})`)
-
-        const keySpacing = 30
-        const rectSize = 12
-        
-        const totalSalesPerGenre = {}
-        series.forEach(d=>{
-            const total = d.reduce((acc,p) => acc + (p[1] - p[0]), 0)
-            totalSalesPerGenre[d.key] = total
-        })
-        
-        
-        key.selectAll("g")
-            .data(this.topGenres[region])
-            .join("g")
-            .attr("transform", (d,i) => `translate(0, ${i * keySpacing})`)
-            .each(function(d){
-                d3.select(this)
-                    .append("rect")
-                    .attr("width", rectSize)
-                    .attr("height", rectSize)
-                    .attr("fill", genreColors(d))
-
-                d3.select(this)
-                    .append("text")
-                    .attr("x", rectSize +5)
-                    .attr("y", rectSize -2)
-                    .text(d)
-                    .attr("font-size", "12px")
-
-                d3.select(this)
-                    .append("text")
-                    .attr("x", rectSize +5 + 155)
-                    .attr("y", rectSize -2)
-                    .text(`${totalSalesPerGenre[d].toFixed(2)}M Total Sale`)
-                    .attr("font-size", "12px")
-            })
-
-        // Update current state
-        this.currentView = 'genre';
-        this.currentRegion = region;
-    }
     
     /**
      * Draws the publisher streamgraph for the desired region
      * @param {String} region - Region code (NA, JP, EU, Other, Global)
      * @returns 
      */
-    drawRegion(region) {
+    drawRegion(region, viewType) {
         this.base.selectAll("*").remove()
-        // Verify we have valid data before proceeding
-        if (this.publisherStreamData[region].length === 0 || this.topPubs[region].length === 0) {
-            console.error("No valid data to display");
-            return;
-        }
-        const series = d3.stack()
-            .offset(d3.stackOffsetWiggle)
-            .order(d3.stackOrderInsideOut)
-            .keys(this.topPubs[region])
-            (this.publisherStreamData[region])
 
-        const xStream = d3.scaleLinear()
-            .domain(d3.extent(this.years))
-            .range([this.streamPos.x + this.streamMargin.left, this.streamPos.x + this.streamSize.width - this.streamMargin.right])
-        
-        const yStream = d3.scaleLinear()
-            .domain([d3.min(series, d => d3.min(d, d => d[0])), d3.max(series, d => d3.max(d, d => d[1]))])
-            .range([this.streamPos.y + this.streamSize.height - this.streamMargin.bottom, this.streamPos.y + this.streamMargin.top])
-        
-        const area = d3.area()
-            .x(d => xStream(d.data.Year))
-            .y0(d => yStream(d[0]))
-            .y1(d => yStream(d[1]))
-            .curve(d3.curveBasis)
-        
-        const publishersColors = d3.scaleOrdinal()
-            .domain(this.topPubs[region])
-            .range(d3.schemeCategory10)
+        const stream = this.getStream(region, viewType)
 
         this.base.selectAll("path")
-            .data(series)
+            .data(stream.series)
             .join("path")
-            .attr("fill", d => publishersColors(d.key))
+            .attr("fill", d => stream.colors(d.key))
             .attr("class", "stream-colors")
-            .attr("d", area)
+            .attr("d", stream.area)
             .append("title")
             .text(d =>{
                 const values = d.reduce((acc, p) => acc + (p[1]-p[0]),0)
                 return `${d.key}: ${values.toFixed(2)}M`
             })
 
+        this.drawAxis(stream.xStream, stream.yStream, viewType, region);
+
+        
+        //creates a key for the graph
+        const key = this.base.append("g")
+            .attr("class", "key")
+            .attr("transform", `translate(${this.streamPos.x + this.streamSize.width}, ${this.streamPos.y + this.streamMargin.top})`)
+
+        const keySpacing = 30
+        const rectSize = 12
+        
+        const totalSales = {}
+        stream.series.forEach(d=>{
+            const total = d.reduce((acc,p) => acc + (p[1] - p[0]), 0)
+            totalSales[d.key] = total
+        })
+
+        key.selectAll("g")
+            .data(stream.keys)
+            .join("g")
+            .attr("transform", (d,i) => `translate(0, ${i * keySpacing})`)
+            .each(function(d){
+                d3.select(this)
+                    .append("rect")
+                    .attr("width", rectSize)
+                    .attr("height", rectSize)
+                    .attr("fill", stream.colors(d))
+                d3.select(this)
+                    .append("text")
+                    .attr("x", rectSize +5)
+                    .attr("y", rectSize -2)
+                    .text(d)
+                    .attr("font-size", "12px")
+                
+                d3.select(this)
+                    .append("text")
+                    .attr("x", rectSize +5 + 155)
+                    .attr("y", rectSize -2)
+                    .text(`${totalSales[d].toFixed(2)}M Total Sale`)
+                    .attr("font-size", "12px")
+                
+            })
+
+        // Update current state
+        this.currentView = viewType;
+        this.currentRegion = region;
+    }
+    
+    drawAxis(xStream, yStream, viewType, region) {
         //Xaxis in years
         this.base.append("g")
             .attr("class", "x-axis")
@@ -693,7 +537,7 @@ class StreamGraph {
             .attr("font-size", "22px")
             .attr("text-anchor", "middle")
             .text("YEAR")
-        
+
         // graph label
         this.base.append("text")
             .attr("class", "graph-title")
@@ -704,58 +548,57 @@ class StreamGraph {
             .attr("font-weight","bold")
             .text(function(){switch(region){
                 case "Other":
-                    return `Publisher Sales in ${region} Regions Over the Years`
+                    return `${viewType} Sales in ${region} Regions Over the Years`
                 case "Global":
-                    return "Publisher Sales Globally Over the Years"
+                    return `${viewType} Sales Globally Over the Years`
                 default:
-                    return `Publisher Sales in the ${region} Region Over the Years`
-
+                    return `${viewType} Sales in the ${region} Region Over the Years`
             }})
+    }
 
-        //creates a key for the graph
-        const key = this.base.append("g")
-            .attr("class", "key")
-            .attr("transform", `translate(${this.streamPos.x + this.streamSize.width}, ${this.streamPos.y + this.streamMargin.top})`)
-
-        const keySpacing = 30
-        const rectSize = 12
+    getStream(region, viewType) {
+        // Get new data and scales
+        const newData = viewType === 'publisher' ? 
+            this.publisherStreamData[region] : 
+            this.genreStreamData[region];
         
-        const totalSalesPerPub = {}
-        series.forEach(d=>{
-            const total = d.reduce((acc,p) => acc + (p[1] - p[0]), 0)
-            totalSalesPerPub[d.key] = total
-        })
-        key.selectAll("g")
-            .data(this.topPubs[region])
-            .join("g")
-            .attr("transform", (d,i) => `translate(0, ${i * keySpacing})`)
-            .each(function(d){
-                d3.select(this)
-                    .append("rect")
-                    .attr("width", rectSize)
-                    .attr("height", rectSize)
-                    .attr("fill", publishersColors(d))
+        const newKeys = viewType === 'publisher' ? 
+            this.topPubs[region] : 
+            this.topGenres[region];
 
-                d3.select(this)
-                    .append("text")
-                    .attr("x", rectSize +5)
-                    .attr("y", rectSize -2)
-                    .text(d)
-                    .attr("font-size", "12px")
-                
-                d3.select(this)
-                    .append("text")
-                    .attr("x", rectSize +5 + 155)
-                    .attr("y", rectSize -2)
-                    .text(`${totalSalesPerPub[d].toFixed(2)}M Total Sale`)
-                    .attr("font-size", "12px")
-                
-            })
+        if (!newData || newData.length === 0 || !newKeys || newKeys.length === 0) {
+            console.error("No valid data for transition");
+            return null;
+        }
 
-        // Update current state
-        this.currentView = 'publisher';
-        this.currentRegion = region;
+        const newSeries = d3.stack()
+            .offset(d3.stackOffsetWiggle)
+            .order(d3.stackOrderInsideOut)
+            .keys(newKeys)
+            (newData);
+
+        const xStream = d3.scaleLinear()
+            .domain(d3.extent(this.years))
+            .range([this.streamPos.x + this.streamMargin.left, this.streamPos.x + this.streamSize.width - this.streamMargin.right]);
+        
+        const yStream = d3.scaleLinear()
+            .domain([d3.min(newSeries, d => d3.min(d, d => d[0])), d3.max(newSeries, d => d3.max(d, d => d[1]))])
+            .range([this.streamPos.y + this.streamSize.height - this.streamMargin.bottom, this.streamPos.y + this.streamMargin.top]);
+        
+        const area = d3.area()
+            .x(d => xStream(d.data.Year))
+            .y0(d => yStream(d[0]))
+            .y1(d => yStream(d[1]))
+            .curve(d3.curveBasis);
+
+        const newColors = d3.scaleOrdinal()
+            .domain(newKeys)
+            .range(viewType === 'publisher' ? d3.schemeCategory10 : d3.schemePaired);
+
+        return {data: newData, keys: newKeys, series: newSeries, xStream: xStream, yStream: yStream, area: area, colors: newColors};
     }
 }
+
+
 
 export default StreamGraph
