@@ -150,11 +150,10 @@ class BarGraph {
             <p><Strong>North American Sales</Strong>: ${gameData.NA_Sales}M</p>
             <p><Strong>European Sales</Strong>: ${gameData.EU_Sales}M</p>
             <p><Strong>Japanese Sales</Strong>: ${gameData.JP_Sales}M</p>
-            <p></Strong>Other Countries Sales</Strong>: ${gameData.Other_Sales}M</p>`
+            <p><Strong>Other Countries Sales</Strong>: ${gameData.Other_Sales}M</p>`
         barGraphInfo.innerHTML = infoText
             
     }
-        
        
 }
 

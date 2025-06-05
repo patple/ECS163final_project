@@ -44,18 +44,18 @@ html,body{
 .auto-fill-list{
     position: absolute;
     border: 1px solid black;
-    border-bottom: none;
+    border-bottom: 1px solid black;
     border-top: none;
-    max-height: 150px;
+    max-height: 8vh;
     overflow-y: auto;
     background-color: white;
-    width: 50%;
+    width: 80%;
 }
 .bar-graph-text{
     max-width: 400px;
     margin: 1rem auto;
     flex-direction: row;
-    background-color: #DFD3CC;
+    background-color: #ebeedc;
     border-radius: 10px;
     padding: 1rem;
     text-align: center;
@@ -76,7 +76,17 @@ html,body{
     gap:25px;
     align-items: flex-start;
     margin: 1rem auto;
-    width: 100%;
-    max-width: 700px;
+    width: 1%;
+    max-width: 30vw;
 }
 
+input {
+    border: 2px solid black;
+}
+
+input[type=text] {
+    width: 100%;
+    font-size: 16px;
+    padding-left: 12px;
+    box-sizing: border-box;
+}
