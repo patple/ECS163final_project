@@ -186,8 +186,8 @@ d3.csv("./data/vgsales.csv").then(data => {
         button.addEventListener('click', ()=>{
             const region = button.dataset.region
             
-            streamgraph.transitionTo(region, 'publisher')
-            genreGraph.transitionTo(region, 'genre')
+            streamgraph.transitionTo(region, 'Publisher')
+            genreGraph.transitionTo(region, 'Genre')
 
            displayInsight(region)
 

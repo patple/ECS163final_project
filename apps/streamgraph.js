@@ -221,7 +221,7 @@ class StreamGraph {
      */
     transitionTo(region, viewType) {
         // Calculate new data if needed
-        if (viewType === 'publisher') {
+        if (viewType === 'Publisher') {
             this.calculateRegion(region);
         } else {
             this.calculateGenre(region);
@@ -280,7 +280,7 @@ class StreamGraph {
                     .attr("d", stream.area)
                     .select("title")
                     .text(d => {
-                        if (viewType === 'publisher') {
+                        if (viewType === 'Publisher') {
                             const values = d.reduce((acc, p) => acc + (p[1]-p[0]), 0);
                             return `${d.key}: ${values.toFixed(2)}M`;
                         } else {
@@ -295,7 +295,7 @@ class StreamGraph {
                     .enter()
                     .append("title")
                     .text(d => {
-                        if (viewType === 'publisher') {
+                        if (viewType === 'Publisher') {
                             const values = d.reduce((acc, p) => acc + (p[1]-p[0]), 0);
                             return `${d.key}: ${values.toFixed(2)}M`;
                         } else {
@@ -325,29 +325,14 @@ class StreamGraph {
      */
     updateTitleAndLegend(region, viewType, stream, transition) {
         // Update title
-        let titleText;
-
-        if (viewType === 'genre') {
-            titleText = function(){switch(region){
+        let titleText = function(){switch(region){
                 case "Other":
-                    return `Genre Sales in ${region} Regions Over the Years`;
+                    return `${viewType} Sales in ${region} Regions Over the Years`;
                 case "Global":
-                    return "Genre Sales Globally Over the Years";
+                    return `${viewType} Sales Globally Over the Years`;
                 default:
-                    return `Genre Sales in the ${region} Region Over the Years`;
-
-            }}()
-        } else if (viewType === 'publisher') {
-            titleText = function(){switch(region){
-                case "Other":
-                    return `Publisher Sales in ${region} Regions Over the Years`;
-                case "Global":
-                    return "Publisher Sales Globally Over the Years";
-                default:
-                    return `Publisher Sales in the ${region} Region Over the Years`;
-            }}()
-        } else {
-            return -1;
+                    return `${viewType} Sales in the ${region} Region Over the Years`;
+            }
         }
 
         this.base.select(".graph-title") // Target the specific title element
