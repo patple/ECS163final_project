@@ -528,11 +528,11 @@ class StreamGraph {
      */
     getStream(region, viewType) {
         // Get new data and scales
-        const newData = viewType === 'publisher' ? 
+        const newData = viewType === 'Publisher' ? 
             this.publisherStreamData[region] : 
             this.genreStreamData[region];
         
-        const newKeys = viewType === 'publisher' ? 
+        const newKeys = viewType === 'Publisher' ? 
             this.topPubs[region] : 
             this.topGenres[region];
 
@@ -563,7 +563,7 @@ class StreamGraph {
 
         const newColors = d3.scaleOrdinal()
             .domain(newKeys)
-            .range(viewType === 'publisher' ? d3.schemeCategory10 : d3.schemePaired);
+            .range(viewType === 'Publisher' ? d3.schemeCategory10 : d3.schemePaired);
 
         const totalSales = {}
         newSeries.forEach(d=>{

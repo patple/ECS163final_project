@@ -24,7 +24,7 @@ d3.csv("./data/vgsales.csv").then(data => {
 
     streamgraph.initDataset(data);
     streamgraph.calculateRegion("NA");
-    streamgraph.drawRegion("NA", "publisher");
+    streamgraph.drawRegion("NA", "Publisher");
 
     
     let genreGraph = new StreamGraph(c.base)
@@ -33,7 +33,7 @@ d3.csv("./data/vgsales.csv").then(data => {
     genreGraph.defineStreamMargins({top: 50, left: 0, bottom: 50, right: 100})
     genreGraph.initDataset(data);
     genreGraph.calculateGenre("NA");
-    genreGraph.drawRegion("NA", "genre")
+    genreGraph.drawRegion("NA", "Genre")
 
 
     let searchGraph = new BarGraph(e.base)
