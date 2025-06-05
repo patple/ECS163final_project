@@ -506,7 +506,7 @@ class StreamGraph {
         this.base.append("g")
             .attr("class", "y-axis")
             .attr("transform", `translate(${this.streamPos.x + this.streamMargin.left}, 0)`)
-            .call(d3.axisLeft(yStream).ticks(5))
+            .call(d3.axisLeft(yStream).ticks(7))
             .selectAll("text").text(d => Math.abs(d))
 
         //Yaxis label
