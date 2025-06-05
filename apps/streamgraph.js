@@ -7,9 +7,11 @@ class StreamGraph {
     streamPos = {x: 0, y: 0};
     streamMargin = {top: 0, right: 0, bottom: 0, left: 0};
     streamSize = {width: 0, height: 0};
+    streamBounds = {left: 0, right: 0};
 
-    legendSize = {width: 300};
-    legendMargins = {left: 30, top: 30};
+    legendSize = {width: 200, rectSize: 12};
+    legendMargins = {left: 0, top: 30, separand: 156, padding: 30};
+    legendText = {size: 12};
 
     
     pubColors = d3.schemeCategory10;
@@ -44,27 +46,39 @@ class StreamGraph {
 
 
     /**
-     * Sets the streamgraph size
-     * @param {Object} streamSize - Object with Number fields x, y
+     * Sets the streamgraph window size
+     * @param {Object} windowSize - Object with Number fields width, height
      * @returns {Boolean}
      */
-    resizeStream(streamSize) {
-        let ogkeys = Object.keys(this.streamSize);
-        Object.keys(this.streamSize).forEach(key => {
+    resizeWindow(windowSize) {
+        let ogkeys = Object.keys(this.windowSize);
+        Object.keys(this.windowSize).forEach(key => {
             if (!ogkeys.includes(key)) {
-                console.error(`Tried to resize stream with bad key: ${key}`);
+                console.error(`Tried to resize window with bad key: ${key}`);
                 return false;
-            } else if (isNaN(streamSize[key])) {
-                console.error(`Tried to resize stream with non-number: ${streamSize[key]}`);
+            } else if (isNaN(windowSize[key])) {
+                console.error(`Tried to resize window with non-number: ${windowSize[key]}`);
                 return false;
             }
-            this.streamSize[key] = streamSize[key];
+            this.windowSize[key] = windowSize[key];
         })
+        return true;
+    }
+
+    /**
+     * Sets the streamgraph size based on window configurations
+     * @returns {Boolean}
+     */
+    setStream() {
+        this.streamBounds.left = this.streamPos.x;
+        this.streamSize.width = this.windowSize.width - this.legendSize.width;
+        this.streamBounds.right = this.streamBounds.left + this.streamSize.width;
+        this.streamSize.height = this.windowSize.height;
         return true;
     }
     
     /**
-     * 
+     * Sets the position at the streamgrah
      * @param {*} streamPos 
      * @returns {Boolean}
      */
@@ -434,35 +448,32 @@ class StreamGraph {
         key.selectAll("g")
             .data(stream.keys)
             .join("g")
-            .attr("transform", (d,i) => `translate(0, ${i * keySpacing})`)
-            .each(function(d){
-                d3.select(this)
-                    .append("rect")
-                    .attr("width", rectSize)
-                    .attr("height", rectSize)
-                    .attr("fill", stream.colors(d))
-                d3.select(this)
-                    .append("text")
-                    .attr("x", rectSize +5)
-                    .attr("y", rectSize -2)
-                    .text(d)
-                    .attr("font-size", "12px")
+            .attr("transform", (d,i) => `translate(${this.legendMargins.left}, ${i * this.legendMargins.padding})`)
+                .append("rect")
+                .attr("width", this.legendSize.rectSize)
+                .attr("height", this.legendSize.rectSize)
+                .attr("fill", d => stream.colors(d))
+        key.selectAll("g")
+                .append("text")
+                .attr("x", this.legendSize.rectSize + 5)
+                .attr("y", this.legendSize.rectSize - 2)
+                .text(d => d)
+                .attr("font-size", `${this.legendText.size}px`)
+        key.selectAll("g")
+            .append("text")
+            .attr("x", this.legendSize.rectSize + this.legendMargins.separand)
+            .attr("y", this.legendSize.rectSize - 2)
+            .text(d => `${stream.sales[d].toFixed(2)}M Total Sale`)
+            .attr("font-size", `${this.legendText.size}px`)
                 
-                d3.select(this)
-                    .append("text")
-                    .attr("x", rectSize +5 + 155)
-                    .attr("y", rectSize -2)
-                    .text(`${stream.sales[d].toFixed(2)}M Total Sale`)
-                    .attr("font-size", "12px")
-                
-            })
+        
 
         return key;
     }
 
 
     /**
-     * 
+     * Draws axes and title for the streamgraph
      * @param {*} xStream 
      * @param {*} yStream 
      * @param {*} viewType 
@@ -505,7 +516,7 @@ class StreamGraph {
         // graph label
         this.base.append("text")
             .attr("class", "graph-title")
-            .attr("x", (this.streamPos.x + this.streamMargin.left + this.streamPos.x + this.streamSize.width - this.streamMargin.right) / 2)
+            .attr("x", (this.windowSize.width) / 2 + this.streamPos.x)
             .attr("y", this.streamPos.y + this.streamMargin.top - 30)
             .attr("font-size", "30px")
             .attr("text-anchor", "middle")
