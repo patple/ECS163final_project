@@ -69,7 +69,13 @@ html,body{
     align-items: flex-start;
 }
 #bar-graph-info{
+    display: flex;
+    align-self: center;
+    justify-self: end;
+    margin-right: 120px;
     font-size: 24px;
+    /* background-color: black; */
+    
 }
 
 .bar-graph-wrapper{
