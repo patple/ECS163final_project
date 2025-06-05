@@ -17,6 +17,7 @@ class StreamGraph {
     publisherStreamData = {NA: null, JP: null, EU: null, Other: null, Global: null};
     years = null;
 
+    topGenres = {NA: null, JP: null, EU: null, Other: null, Global: null};
     genreSales ={ NA: null, JP : null, EU: null, Other: null, Global: null};
     genreStreamData = {NA: null, JP: null, EU: null, Other: null, Global: null};
     
@@ -218,7 +219,7 @@ class StreamGraph {
      * @param {string} region - Region code (NA, JP, EU, Other, Global)
      * @param {string} viewType - 'publisher' or 'genre'
      */
-    transitionTo(region, viewType = 'publisher') {
+    transitionTo(region, viewType) {
         // Calculate new data if needed
         if (viewType === 'publisher') {
             this.calculateRegion(region);
@@ -232,11 +233,6 @@ class StreamGraph {
         
         if (isSameView) {
             // No transition needed, draw directly
-            if (viewType === 'publisher') {
-                this.drawRegion(region);
-            } else {
-                this.drawGenre(region);
-            }
             this.currentView = viewType;
             this.currentRegion = region;
             return;
@@ -369,18 +365,20 @@ class StreamGraph {
 
         // Update legend
         // Redraw Keys
-        const key = this.base.select("g.key").remove();
+        this.base.select("g.key").remove();
         this.drawKeys(stream);
         
+        const key = this.base.select(".key")
         key.selectAll("g")
             .transition(transition)
             .style("opacity", 0)
             .on("end", () => {
                 const keySpacing = 30;
                 const rectSize = 12;
+                console.log()
 
                 const legendGroups = key.selectAll("g")
-                    .data(keys, d => d);
+                    .data(stream.keys, d => d);
 
                 legendGroups.exit().remove();
 
@@ -562,6 +560,8 @@ class StreamGraph {
 
     getStream(region, viewType) {
         // Get new data and scales
+        console.log(this.topPubs)
+        console.log(this.topGenres)
         const newData = viewType === 'publisher' ? 
             this.publisherStreamData[region] : 
             this.genreStreamData[region];
@@ -608,7 +608,5 @@ class StreamGraph {
         return {data: newData, keys: newKeys, series: newSeries, xStream: xStream, yStream: yStream, area: area, colors: newColors, sales: totalSales};
     }
 }
-
-
 
 export default StreamGraph
