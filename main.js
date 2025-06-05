@@ -1,5 +1,5 @@
 import Slider from "./apps/slideAPI.js"
-import Slide from "./apps/slides/slideTemplate.js"
+import Slide from "./apps/slideTemplate.js"
 import StreamGraph from "./apps/streamgraph.js"
 import BarGraph from "./apps/bargraph.js"
 import Button from "./apps/slideButton.js"
@@ -18,21 +18,19 @@ d3.csv("./data/vgsales.csv").then(data => {
     
 
     let streamgraph = new StreamGraph(b.base)
-    //console.log(Object.keys({width: 500, height: 500}))
-    streamgraph.resizeStream({width: 1200, height: 500})
-    streamgraph.moveStream({x: 20, y: 200})
-    streamgraph.defineStreamMargins({top: 50, left: 100, bottom: 50, right: 50})
+    streamgraph.resizeStream({width: 0.7 * width, height: 0.45 * height})
+    streamgraph.moveStream({x: 0.1 * width, y: 0.22 * height})
+    streamgraph.defineStreamMargins({top: 50, left: 0, bottom: 50, right: 100})
 
     streamgraph.initDataset(data);
-    //console.log(streamgraph.dataset)
     streamgraph.calculateRegion("NA");
     streamgraph.drawRegion("NA");
 
     
     let genreGraph = new StreamGraph(c.base)
-    genreGraph.resizeStream({width: 1200, height: 500})
-    genreGraph.moveStream({x: 20, y: 200})
-    genreGraph.defineStreamMargins({top: 50, left: 100, bottom: 50, right: 50})
+    genreGraph.resizeStream({width: 0.7 * width, height: 0.45 * height})
+    genreGraph.moveStream({x: 0.1 * width, y: 0.22 * height})
+    genreGraph.defineStreamMargins({top: 50, left: 0, bottom: 50, right: 100})
     genreGraph.initDataset(data);
     genreGraph.calculateGenre("JP");
     genreGraph.drawGenre("JP");

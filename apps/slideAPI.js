@@ -1,5 +1,5 @@
 // hehehaha
-import Slide from "./slides/slideTemplate.js"
+import Slide from "./slideTemplate.js"
 
 /**
  * Class that defines a slideshow. Must be created with a constructor.

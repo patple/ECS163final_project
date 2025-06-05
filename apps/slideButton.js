@@ -25,7 +25,7 @@ class Button {
      * @param {*} args 
      */
     assignFunction(func) {
-        this.base.on("mousedown", function(a, e, o){
+        this.base.on("mousedown", function(){
             func();
             d3.select(this).select("#clickOverlay").attr("fill-opacity", 0.4);
         })
