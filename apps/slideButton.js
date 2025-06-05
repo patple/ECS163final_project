@@ -13,10 +13,10 @@ class Button {
 
     text = null;
 
-    constructor(parent, func, args) {
+    constructor(parent, func) {
         this.parent = parent
         this.base = this.parent.append("g");
-        this.assignFunction(func, args);
+        this.assignFunction(func);
     }
 
     /**
@@ -24,9 +24,9 @@ class Button {
      * @param {Function} func 
      * @param {*} args 
      */
-    assignFunction(func, args) {
+    assignFunction(func) {
         this.base
-        this.base.on("click", func(args));
+        this.base.on("click", func);
     }
 
     /**
@@ -53,7 +53,7 @@ class Button {
             .attr("y", this.buttonSize.height / 2)
             .attr("fill", this.buttonColor)
             .attr("stroke", this.border.color)
-            .attr("stroke-width", this.border.width);
+            .attr("stroke-width", `${this.border.width}px`);
     }
 
     /**

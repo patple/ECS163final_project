@@ -1,9 +1,8 @@
-import testmake from "./apps/test.js"
 import Slider from "./apps/slideAPI.js"
 import Slide from "./apps/slides/slideTemplate.js"
 import StreamGraph from "./apps/streamgraph.js"
-import testmakeSlide from "./apps/testmakeslide.js"
 import BarGraph from "./apps/bargraph.js"
+import Button from "./apps/slideButton.js"
 
 let width = window.innerWidth;
 let height = window.innerHeight;
@@ -11,12 +10,12 @@ let height = window.innerHeight;
 
 
 d3.csv("./data/vgsales.csv").then(data => {
-    let a = testmakeSlide([width/2, 0, width/2, height/2, " rgb(202, 202, 202)"]);
-    let b = new Slide(width, height)
-    let c = testmakeSlide([width/2, 0, width/2, height/2, " rgb(202, 202, 202)"]);
-    let d = testmakeSlide([width/2, height/2, width/2, height/2, " rgb(202, 202, 202)"]);
-    let e = testmakeSlide([width/2, height/2, width/2, height/2, " rgb(202, 202, 202)"]);
-
+    let a = new Slide(width, height);
+    let b = new Slide(width, height);
+    let c = new Slide(width, height);
+    let d = new Slide(width, height);
+    let e = new Slide(width, height);
+    
 
     let streamgraph = new StreamGraph(b.base)
     //console.log(Object.keys({width: 500, height: 500}))
@@ -126,20 +125,19 @@ d3.csv("./data/vgsales.csv").then(data => {
         const inputGame = event.target.value.trim()
         autoFill(inputGame)
     })
-    //const placeHolderGame = data.find(d =>d.Name === "Wii Sports")
-    //searchGraph.drawSearchGame(placeHolderGame)
-
-    
-   
 
 
     let slides = new Slider([a, b, c, d, e], 200, [-width, 0, width])
-    d3.select("svg")
-    .on("click", function() { slides.goNext(); })
-    .on("contextmenu", function() { 
-        d3.event.preventDefault(); 
-        slides.goPrev(); 
-    });
+
+    let prevButton = new Button(d3.select("svg"), function(){slides.goPrev();})
+    prevButton.defineRectangle({width: width / 8, height: height / 8}, "red", {width: 4, color: "hotpink"});
+    prevButton.drawRectangle();
+
+    let nextButton = new Button(d3.select("svg"), function(){slides.goNext();})
+    nextButton.move(0, height / 5)
+    nextButton.defineRectangle({width: width / 8, height: height / 8}, "lightgrey", {width: 4, color: "hotpink"});
+    nextButton.drawRectangle();
+
 
     // Controls the display of all overlays
     function updateOverlays(currentIndex) {
