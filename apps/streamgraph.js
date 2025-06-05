@@ -1,4 +1,13 @@
 
+const publisherArray = ["Nintendo", "Electronic Arts", "Activision", "Sony Computer Entertainment", 
+    "Take-Two Interactive", "Microsoft Game Studios", "Ubisoft", "THQ", "Sega", "Atari", "Konami Digital Entertainment",
+    "Capcom", "SquareSoft", "Namco Bandai Games", "Enix Corporation", "Square Enix"];
+const publisherColorArray = ['#DC143C', '#6E34EB', '#4169E1', '#0000CD', '#FF4500', '#0C7A1F', '#4F6CA8',
+    '#D685AD', '#00BFFF', '#ea9999', '#c90076', '#ffe400', '#9E93A0', '#da6921', '#c9edf7', '#22ded4'];
+
+const genreArray = [];
+
+
 class StreamGraph {
     parent = null;
     base = null;
@@ -14,7 +23,7 @@ class StreamGraph {
     legendText = {size: 12};
 
     
-    pubColors = d3.schemeCategory10;
+    pubColors = d3.schemeCategory10
     topPubs = {NA: null, JP: null, EU: null, Other: null, Global: null};
     publisherSales = {NA: null, JP: null, EU: null, Other: null, Global: null};
     publisherStreamData = {NA: null, JP: null, EU: null, Other: null, Global: null};
@@ -549,6 +558,10 @@ class StreamGraph {
             this.topPubs[region] : 
             this.topGenres[region];
 
+        const colorDomain = viewType === 'Publisher' ?
+            publisherArray :
+            genreArray;
+
         if (!newData || newData.length === 0 || !newKeys || newKeys.length === 0) {
             console.error("No valid data for transition");
             return null;
@@ -575,8 +588,8 @@ class StreamGraph {
             .curve(d3.curveBasis);
 
         const newColors = d3.scaleOrdinal()
-            .domain(newKeys)
-            .range(viewType === 'Publisher' ? d3.schemeCategory10 : d3.schemePaired);
+            .domain(colorDomain)
+            .range(viewType === 'Publisher' ? publisherColorArray : d3.schemePaired);
 
         const totalSales = {}
         newSeries.forEach(d=>{
