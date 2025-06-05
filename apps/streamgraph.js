@@ -380,7 +380,8 @@ class StreamGraph {
         // Update Y axis
         this.base.select(".y-axis")
             .transition(transition)
-            .call(d3.axisLeft(yScale).ticks(5));
+            .call(d3.axisLeft(yScale).ticks(5))
+            .selectAll("text").text(d => Math.abs(d))
     }
     
     /**
