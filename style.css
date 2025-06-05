@@ -69,7 +69,7 @@ html,body{
     align-items: flex-start;
 }
 #bar-graph-info{
-    display: flex;
+    display: none;
     align-self: center;
     justify-self: end;
     margin-right: 120px;
