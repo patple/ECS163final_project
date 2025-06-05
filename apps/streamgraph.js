@@ -238,11 +238,6 @@ class StreamGraph {
         // Check if this is the first render or same view
         const isFirstRender = !this.currentView && !this.currentRegion;
         const isSameView = this.currentView === viewType && this.currentRegion === region;
-
-        console.log(this.currentRegion)
-        console.log(region)
-        console.log(this.currentView)
-        console.log(viewType)
         
         if (isSameView) {
             // No transition needed, draw directly
