@@ -315,7 +315,7 @@ class StreamGraph {
             });
 
             // Update title and legend
-            this.updateTitleAndLegend(region, viewType, stream.keys, stream.colors, t);
+            this.updateTitleAndLegend(region, viewType, stream, t);
 
         // Update axes immediately
         this.updateAxes(stream.xStream, stream.yStream, t);
@@ -329,7 +329,7 @@ class StreamGraph {
      * @param {Function} colorScale - Color scale function
      * @param {Object} transition - D3 transition object
      */
-    updateTitleAndLegend(region, viewType, keys, colorScale, transition) {
+    updateTitleAndLegend(region, viewType, stream, transition) {
         // Update title
         let titleText;
 
@@ -368,7 +368,9 @@ class StreamGraph {
         });
 
         // Update legend
-        const key = this.base.select(".key");
+        // Redraw Keys
+        const key = this.base.select("g.key").remove();
+        this.drawKeys(stream);
         
         key.selectAll("g")
             .transition(transition)
@@ -398,7 +400,7 @@ class StreamGraph {
                         }
                         rect.attr("width", rectSize)
                             .attr("height", rectSize)
-                            .attr("fill", colorScale(d));
+                            .attr("fill", stream.colors(d));
 
                         // Update or add text
                         let text = group.select("text");
@@ -460,18 +462,20 @@ class StreamGraph {
 
         
         //creates a key for the graph
+        this.drawKeys(stream)
+
+        // Update current state
+        this.currentView = viewType;
+        this.currentRegion = region;
+    }
+
+    drawKeys(stream) {
         const key = this.base.append("g")
             .attr("class", "key")
             .attr("transform", `translate(${this.streamPos.x + this.streamSize.width}, ${this.streamPos.y + this.streamMargin.top})`)
 
         const keySpacing = 30
         const rectSize = 12
-        
-        const totalSales = {}
-        stream.series.forEach(d=>{
-            const total = d.reduce((acc,p) => acc + (p[1] - p[0]), 0)
-            totalSales[d.key] = total
-        })
 
         key.selectAll("g")
             .data(stream.keys)
@@ -494,15 +498,15 @@ class StreamGraph {
                     .append("text")
                     .attr("x", rectSize +5 + 155)
                     .attr("y", rectSize -2)
-                    .text(`${totalSales[d].toFixed(2)}M Total Sale`)
+                    .text(`${stream.sales[d].toFixed(2)}M Total Sale`)
                     .attr("font-size", "12px")
                 
             })
 
-        // Update current state
-        this.currentView = viewType;
-        this.currentRegion = region;
+        return key;
     }
+
+
     
     drawAxis(xStream, yStream, viewType, region) {
         //Xaxis in years
@@ -595,7 +599,13 @@ class StreamGraph {
             .domain(newKeys)
             .range(viewType === 'publisher' ? d3.schemeCategory10 : d3.schemePaired);
 
-        return {data: newData, keys: newKeys, series: newSeries, xStream: xStream, yStream: yStream, area: area, colors: newColors};
+        const totalSales = {}
+        newSeries.forEach(d=>{
+            const total = d.reduce((acc,p) => acc + (p[1] - p[0]), 0)
+            totalSales[d.key] = total
+        })
+
+        return {data: newData, keys: newKeys, series: newSeries, xStream: xStream, yStream: yStream, area: area, colors: newColors, sales: totalSales};
     }
 }
 
