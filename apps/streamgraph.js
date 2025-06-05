@@ -3,15 +3,15 @@ const publisherArray = ["Nintendo", "Electronic Arts", "Activision", "Sony Compu
     "Take-Two Interactive", "Microsoft Game Studios", "Ubisoft", "THQ", "Sega", "Atari", "Konami Digital Entertainment",
     "Capcom", "SquareSoft", "Namco Bandai Games", "Enix Corporation", "Square Enix"
 ];
-const publisherColorArray = ['#DC143C', '#9400D3', '#4169E1', '#0000CD', '#FF4500', '#0C7A1F', '#F5F5F5',
-    '#DAA520', '#00BFFF', '#6B0000', '#FFA07A', '#ffe400', '#9E93A0', '#da6921', '#c9edf7', '#22ded4'
+const publisherColorArray = ['#DC143C', '#9400D3', '#302020', '#1E90FF', '	#708090', '#0C7A1F', '#F5F5F5',
+    '#9ACD32', '#00BFFF', '#6B0000', '#FF5733', '#ffe400', '#9E93A0', '#da6921', '#c9edf7', '#22ded4'
 ];
 
 const genreArray = ["Action", "Sports", "Shooter", "Platform", "Role-Playing", "Racing", "Misc",
     "Fighting", "Simulation", "Puzzle", "Adventure", "Strategy"
 ];
 const genreColorArray = ['#EE8130', '#6390F0', '#F7D02C', '#7AC74C', '#F0FFFF', '#96D9D6', '#C22E28',
-    '#A33EA1', '#E2BF65', '#A98FF3', '#F95587', '#A6B91A'
+    '#A33EA1', '#E2BF65', '#FFD700', '#F95587', '#A6B91A'
 ]
 
 
