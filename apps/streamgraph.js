@@ -29,8 +29,8 @@ class StreamGraph {
     }
 
     /**
-     * 
-     * @param {*} parent 
+     * Sets the parent element from which the streamgraph is made
+     * @param {*} parent - d3 selection of an element
      * @returns {Boolean}
      */
     attach(parent) {
@@ -38,29 +38,10 @@ class StreamGraph {
         return true;
     }
 
-    /**
-     * 
-     * @param {Object} windowSize 
-     * @returns {Boolean}
-     */
-    resizeWindow(windowSize) {
-        let ogkeys = Object.keys(this.windowSize);
-        Object.keys(this.windowSize).forEach(key => {
-            if (!ogkeys.includes(key)) {
-                console.error(`Tried to resize window with bad key: ${key}`);
-                return false;
-            } else if (isNaN(windowSize[key])) {
-                console.error(`Tried to resize window with non-number: ${windowSize[key]}`);
-                return false;
-            }
-            this.windowSize[key] = windowSize[key];
-        })
-        return true;
-    }
 
     /**
-     * 
-     * @param {Object} streamSize 
+     * Sets the streamgraph size
+     * @param {Object} streamSize - Object with Number fields x, y
      * @returns {Boolean}
      */
     resizeStream(streamSize) {
@@ -99,7 +80,7 @@ class StreamGraph {
     }
 
     /**
-     * 
+     * Set stream margins for 
      * @param {*} streamMargin 
      * @returns {Boolean}
      */
@@ -126,6 +107,11 @@ class StreamGraph {
         this.transitionDuration = duration;
     }
 
+
+    /**
+     * Clones and initializes dataset for streamgraph calculations
+     * @param {Array} dataset - Pointer to the CSV Array
+     */
     initDataset(dataset) {
         this.dataset = [...dataset];
         let yrextent = d3.extent(dataset.map(d => d.Year).filter(d => !isNaN(d)));
@@ -134,9 +120,8 @@ class StreamGraph {
     }
 
     /**
-     * 
-     * @param {Array} dataset
-     * @param {String} region
+     * Calculates publisher data needed to display a certain region
+     * @param {String} region - Region code (NA, JP, EU, Other, Global)
      */
     calculateRegion(region) {
         let regionalSales = region.concat("_Sales");
@@ -179,6 +164,10 @@ class StreamGraph {
         })
     }
 
+    /**
+     * Calculates genre data needed for a certain genre
+     * @param {*} region - Region code (NA, JP, EU, Other, Global)
+     */
     calculateGenre(region){
         let regionalSales = region.concat("_Sales");
         let data = [...this.dataset];
@@ -260,7 +249,7 @@ class StreamGraph {
 
     /**
      * Execute the actual transition animation
-     * @param {string} region - Target region
+     * @param {string} region - Region code (NA, JP, EU, Other, Global)
      * @param {string} viewType - Target view type
      */
     performTransition(region, viewType) {
@@ -356,10 +345,10 @@ class StreamGraph {
                     .transition()
                     .duration(this.transitionDuration / 2)
                     .style("opacity", 1);
-
-                // Update title and legend
-                this.updateTitleAndLegend(region, viewType, newKeys, newColors, t);
             });
+
+            // Update title and legend
+                this.updateTitleAndLegend(region, viewType, newKeys, newColors, t);
 
         // Update axes immediately
         this.updateAxes(xStream, yStream, t);
@@ -375,9 +364,30 @@ class StreamGraph {
      */
     updateTitleAndLegend(region, viewType, keys, colorScale, transition) {
         // Update title
-        const titleText = viewType === 'publisher' ? 
-            `Publisher Sales in ${region} Over Years` : 
-            `Top Genre in ${region} Over Years`;
+        let titleText;
+
+        if (viewType === 'genre') {
+            titleText = function(){switch(region){
+                case "Other":
+                    return `Genre Sales in ${region} Regions Over the Years`;
+                case "Global":
+                    return "Genre Sales Globally Over the Years";
+                default:
+                    return `Genre Sales in the ${region} Region Over the Years`;
+
+            }}()
+        } else if (viewType === 'publisher') {
+            titleText = function(){switch(region){
+                case "Other":
+                    return `Publisher Sales in ${region} Regions Over the Years`;
+                case "Global":
+                    return "Publisher Sales Globally Over the Years";
+                default:
+                    return `Publisher Sales in the ${region} Region Over the Years`;
+            }}()
+        } else {
+            return -1;
+        }
 
         this.base.select(".graph-title") // Target the specific title element
             .transition(transition)
@@ -457,6 +467,12 @@ class StreamGraph {
             .call(d3.axisLeft(yScale).ticks(5));
     }
 
+
+    /**
+     * Draws the genre streamgraph for the desired region
+     * @param {String} region - Region code (NA, JP, EU, Other, Global)
+     * @returns 
+     */
     drawGenre(region) {
         this.base.selectAll("*").remove()
         // Verify we have valid data before proceeding
@@ -511,6 +527,7 @@ class StreamGraph {
             .attr("class", "y-axis")
             .attr("transform", `translate(${this.streamPos.x + this.streamMargin.left}, 0)`)
             .call(d3.axisLeft(yStream).ticks(5))
+            .selectAll("text").text(d => Math.abs(d))
 
         //Yaxis label
         let yaxisx = this.streamPos.x + this.streamMargin.left - 40
@@ -518,7 +535,7 @@ class StreamGraph {
         this.base.append("text")
             .attr("x", yaxisx)
             .attr("y", yaxisy)
-            .attr("font-size", "15px")
+            .attr("font-size", "22px")
             .attr("text-anchor", "middle")
             .attr("transform-origin", `${yaxisx} ${yaxisy}`)
             .attr("transform", "rotate(-90)")
@@ -528,7 +545,7 @@ class StreamGraph {
         this.base.append("text")
             .attr("x", (this.streamPos.x + this.streamMargin.left + this.streamPos.x + this.streamSize.width - this.streamMargin.right) / 2)
             .attr("y", this.streamPos.y + this.streamSize.height - this.streamMargin.bottom + 50)
-            .attr("font-size", "15px")
+            .attr("font-size", "22px")
             .attr("text-anchor", "middle")
             .text("YEAR")
         
@@ -537,9 +554,18 @@ class StreamGraph {
             .attr("class", "graph-title")
             .attr("x", (this.streamPos.x + this.streamMargin.left + this.streamPos.x + this.streamSize.width - this.streamMargin.right) / 2)
             .attr("y", this.streamPos.y + this.streamMargin.top - 30)
+            .attr("font-size", "30px")
             .attr("text-anchor", "middle")
             .attr("font-weight","bold")
-            .text(`Top Genre in ${region} Over Years`)
+            .text(function(){switch(region){
+                case "Other":
+                    return `Genre Sales in ${region} Regions Over the Years`
+                case "Global":
+                    return "Genre Sales Globally Over the Years"
+                default:
+                    return `Genre Sales in the ${region} Region Over the Years`
+
+            }})
 
         //creates a key for the graph
         const key = this.base.append("g")
@@ -587,7 +613,11 @@ class StreamGraph {
         this.currentRegion = region;
     }
     
-
+    /**
+     * Draws the publisher streamgraph for the desired region
+     * @param {String} region - Region code (NA, JP, EU, Other, Global)
+     * @returns 
+     */
     drawRegion(region) {
         this.base.selectAll("*").remove()
         // Verify we have valid data before proceeding
@@ -642,6 +672,7 @@ class StreamGraph {
             .attr("class", "y-axis")
             .attr("transform", `translate(${this.streamPos.x + this.streamMargin.left}, 0)`)
             .call(d3.axisLeft(yStream).ticks(5))
+            .selectAll("text").text(d => Math.abs(d))
 
         //Yaxis label
         let yaxisx = this.streamPos.x + this.streamMargin.left - 40
@@ -649,7 +680,7 @@ class StreamGraph {
         this.base.append("text")
             .attr("x", yaxisx)
             .attr("y", yaxisy)
-            .attr("font-size", "15px")
+            .attr("font-size", "22px")
             .attr("text-anchor", "middle")
             .attr("transform-origin", `${yaxisx} ${yaxisy}`)
             .attr("transform", "rotate(-90)")
@@ -659,7 +690,7 @@ class StreamGraph {
         this.base.append("text")
             .attr("x", (this.streamPos.x + this.streamMargin.left + this.streamPos.x + this.streamSize.width - this.streamMargin.right) / 2)
             .attr("y", this.streamPos.y + this.streamSize.height - this.streamMargin.bottom + 50)
-            .attr("font-size", "15px")
+            .attr("font-size", "22px")
             .attr("text-anchor", "middle")
             .text("YEAR")
         
@@ -668,9 +699,18 @@ class StreamGraph {
             .attr("class", "graph-title")
             .attr("x", (this.streamPos.x + this.streamMargin.left + this.streamPos.x + this.streamSize.width - this.streamMargin.right) / 2)
             .attr("y", this.streamPos.y + this.streamMargin.top - 30)
+            .attr("font-size", "30px")
             .attr("text-anchor", "middle")
             .attr("font-weight","bold")
-            .text(`Publisher Sales in ${region} Over Years`)
+            .text(function(){switch(region){
+                case "Other":
+                    return `Publisher Sales in ${region} Regions Over the Years`
+                case "Global":
+                    return "Publisher Sales Globally Over the Years"
+                default:
+                    return `Publisher Sales in the ${region} Region Over the Years`
+
+            }})
 
         //creates a key for the graph
         const key = this.base.append("g")
