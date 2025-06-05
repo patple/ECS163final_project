@@ -17,9 +17,10 @@
 }
 
 .text-box{
-      max-width: 400px;
+      max-width: 35vw;
+      max-height: 50vh;
       flex-direction: row;
-      background-color: #DFD3CC;
+      background-color: #ebeedc;
       border-radius: 10px;
       padding: 1rem;
       text-align: center;
@@ -29,11 +30,11 @@
     display: grid;
     gap: 1rem;
     justify-items: center;
-    grid-template-columns: repeat(2,1fr);
+    grid-template-columns: repeat(2, 1fr);
     }
 
 html,body{
-    background-color:  rgb(202, 202, 202);
+    background-color:  rgb(191, 230, 236);
     margin: 0;
     padding: 0;
     height: 100%;

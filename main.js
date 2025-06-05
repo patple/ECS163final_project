@@ -129,6 +129,7 @@ d3.csv("./data/vgsales.csv").then(data => {
 
     let slides = new Slider([a, b, c, d, e], 200, [-width, 0, width])
 
+    // Make slide buttons
     let prevButton = new Button(d3.select("svg"))
     prevButton.move(0.12 * width, 0.85 * height);
     prevButton.hide();
