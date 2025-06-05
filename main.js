@@ -39,9 +39,9 @@ d3.csv("./data/vgsales.csv").then(data => {
 
 
     let searchGraph = new BarGraph(e.base)
-    searchGraph.resizeBar({width: 1200, height: 500})
-    searchGraph.moveBar({x: 20, y: 200})
-    searchGraph.defineBarMargins({top: 50, left: 100, bottom: 50, right: 50})
+    searchGraph.resizeBar({width: 0.6 * width, height: 0.45 * height})
+    searchGraph.moveBar({x: 0.1 * width, y: 0.22 * height})
+    searchGraph.defineBarMargins({top: 50, left: 0, bottom: 50, right: 50})
     // this will be here untill the search is done 
 
     const searchInput = document.getElementById("game-search-input")
