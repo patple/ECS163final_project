@@ -8,7 +8,8 @@ class StreamGraph {
     streamMargin = {top: 0, right: 0, bottom: 0, left: 0};
     streamSize = {width: 0, height: 0};
 
-    legendSize = {}
+    legendSize = {width: 300};
+    legendMargins = {left: 30, top: 30};
 
     
     pubColors = d3.schemeCategory10;
@@ -347,7 +348,7 @@ class StreamGraph {
 
         // Update legend
         // Redraw Keys
-        this.base.select("g.key")
+        this.base.selectAll("g.key")
             .transition(transition)
             .style("opacity", 0)
             .on("end", function(){
