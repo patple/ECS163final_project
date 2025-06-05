@@ -320,8 +320,7 @@ class StreamGraph {
      * Update title and legend with transition
      * @param {string} region - Current region
      * @param {string} viewType - Current view type
-     * @param {Array} keys - Data keys for legend
-     * @param {Function} colorScale - Color scale function
+     * @param {Object} stream - Stream data object as created by getStream()
      * @param {Object} transition - D3 transition object
      */
     updateTitleAndLegend(region, viewType, stream, transition) {
