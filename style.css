@@ -58,7 +58,7 @@ html,body{
     background-color: #ebeedc;
     border-radius: 10px;
     padding: 1rem;
-    text-align: center;
+    text-align: start;
     justify-items: center;
     display: none;
 }
