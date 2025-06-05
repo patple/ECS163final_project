@@ -57,6 +57,22 @@ class Slider {
     }
 
     /**
+     * Index getter.
+     * @returns {Number}
+     */
+    getIndex() {
+        return this.#index;
+    }
+
+    /**
+     * Length getter.
+     * @returns {Number}
+     */
+    getLength() {
+        return this.#length;
+    }
+
+    /**
      * Updates the {@link Slider} object's transition time.
      * @param {Number} newTime - Defines the time for each slide transition in milliseconds (ms)
      * @returns {Number} 0 or -1, depending on success
@@ -100,7 +116,7 @@ class Slider {
     goPrev() {
         if (!this.#checkValidity()) return -1;
         if (this.#index - 1 < 0) {
-            console.error(`Tried to illegally decrement slides index out of bounds: ${this.#index} -> ${this.#index - 1}`);
+            //console.error(`Tried to illegally decrement slides index out of bounds: ${this.#index} -> ${this.#index - 1}`);
             return -1;
         }
         let curr = this.#slides[this.#index].base;
@@ -119,6 +135,7 @@ class Slider {
 
         this.#index--;
         this.currentIndex--;
+        d3.selectAll("g").dispatch("update");
         if (this.onSlideChange) this.onSlideChange(this.currentIndex);
         return 0;
     }
@@ -130,7 +147,7 @@ class Slider {
     goNext() {
         if (!this.#checkValidity()) return -1;
         if (this.#index + 1 >= this.#length) {
-            console.error(`Tried to illegally increment slides index out of bounds: ${this.#index} -> ${this.#index + 1}`);
+            //console.error(`Tried to illegally increment slides index out of bounds: ${this.#index} -> ${this.#index + 1}`);
             return -1;
         }
         let curr = this.#slides[this.#index].base;
@@ -149,6 +166,7 @@ class Slider {
 
         this.#index++;
         this.currentIndex++;
+        d3.selectAll("g").dispatch("update");
         if (this.onSlideChange) this.onSlideChange(this.currentIndex);
         return 0;
         
@@ -174,6 +192,7 @@ class Slider {
                 }
             }
         })
+        d3.selectAll("g").dispatch("update");
         return 0;
     }
 

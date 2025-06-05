@@ -13,10 +13,9 @@ class Button {
 
     text = null;
 
-    constructor(parent, func) {
+    constructor(parent) {
         this.parent = parent
         this.base = this.parent.append("g");
-        this.assignFunction(func);
     }
 
     /**
@@ -25,7 +24,6 @@ class Button {
      * @param {*} args 
      */
     assignFunction(func) {
-        this.base
         this.base.on("click", func);
     }
 

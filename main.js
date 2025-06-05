@@ -129,13 +129,27 @@ d3.csv("./data/vgsales.csv").then(data => {
 
     let slides = new Slider([a, b, c, d, e], 200, [-width, 0, width])
 
-    let prevButton = new Button(d3.select("svg"), function(){slides.goPrev();})
-    prevButton.defineRectangle({width: width / 8, height: height / 8}, "red", {width: 4, color: "hotpink"});
+    let prevButton = new Button(d3.select("svg"))
+    prevButton.hide()
+    prevButton.assignFunction(function(){
+        slides.goPrev(); 
+    })
+    prevButton.base.on("update", function(){
+        slides.getIndex() == 0 ? prevButton.hide() : prevButton.show();
+    })
+    prevButton.defineRectangle({width: width / 8, height: height / 8}, "steelblue", {width: 3, color: "midnightblue"});
     prevButton.drawRectangle();
 
-    let nextButton = new Button(d3.select("svg"), function(){slides.goNext();})
+    let nextButton = new Button(d3.select("svg"))
+    
+    nextButton.assignFunction(function(){
+        slides.goNext(); 
+    })
+    nextButton.base.on("update", function(){
+        slides.getIndex() >= slides.getLength() - 1 ? nextButton.hide() : nextButton.show();
+    })
     nextButton.move(0, height / 5)
-    nextButton.defineRectangle({width: width / 8, height: height / 8}, "lightgrey", {width: 4, color: "hotpink"});
+    nextButton.defineRectangle({width: width / 8, height: height / 8}, "steelblue", {width: 3, color: "midnightblue"});
     nextButton.drawRectangle();
 
 
