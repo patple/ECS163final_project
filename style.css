@@ -61,13 +61,15 @@ html,body{
     text-align: center;
     justify-items: center;
     display: none;
-    transform: translateX(350px);
 }
 
 .bar-info{
     display: flex;
     gap: 20px;
     align-items: flex-start;
+}
+#bar-graph-info{
+    font-size: 24px;
 }
 
 .bar-graph-wrapper{
@@ -76,8 +78,7 @@ html,body{
     gap:25px;
     align-items: flex-start;
     margin: 1rem auto;
-    width: 1%;
-    max-width: 30vw;
+    width: 165%;
 }
 
 input {
