@@ -1,7 +1,10 @@
 # ECS163 Project Implementation #
 
-This is our repo for the interactive slide show. The code that makes up the bulk of our project is stored within. streamgraph.js and bargraph.js uses D3 to implement the visuals we use throughout our interactive slide show.
-Furthermore, we created a custom slide API that allows us to appened any visual we create through JS. With the visualization methods and slide API are called in the main.js to create the slide show. The interative elements such as buttons are handled in the index.html and style.css which stores all our styling for each slide. Also our search function was created using JS and is stored in the main.js. The data set we used is a list of the top 2000 selling games. This dataset can be found in the data folders within apps. 
+This repo is a the final project for ECS 162, which is an interactive slideshow that visualizes data about the top 2,0000 best selling games from 1980 to 2016.
+The data was obtained from Kaggle and has each game has their title, publisher, release date, genre, platform, and sales which were separated into regions. We utlize   
+D3.js to create the visual graphs such as stream graphs and bar graphs. We also have a custom slide API that creates our slides and allow us to attach our visuals to them.
+The main files that handle the implementations of the visulatizations are streamgraph.js and bargraph.js which are located in the apps folder. Our styling of the slides were handled with HTML 
+CSS.
 
 
 [Video Install Demo](https://youtu.be/3z9Ro5VFom0)
