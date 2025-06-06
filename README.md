@@ -1,8 +1,7 @@
 # ECS163 Project Implementation #
 
 This repo is a the final project for ECS 162, which is an interactive slideshow that visualizes data about the top 2,0000 best selling games from 1980 to 2016.
-The data was obtained from Kaggle and has each game has their title, publisher, release date, genre, platform, and sales which were separated into regions. We utlize   
-D3.js to create the visual graphs such as stream graphs and bar graphs. We also have a custom slide API that creates our slides and allow us to attach our visuals to them.
+The data was obtained from Kaggle and has each game has their title, publisher, release date, genre, platform, and sales which were separated into regions. We utlize D3.js to create the visual graphs such as stream graphs and bar graphs. We also have a custom slide API that creates our slides and allow us to attach our visuals to them.
 The main files that handle the implementations of the visulatizations are streamgraph.js and bargraph.js which are located in the apps folder. Our styling of the slides were handled with HTML 
 CSS.
 
