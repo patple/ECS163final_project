@@ -5,7 +5,7 @@ The data was obtained from Kaggle and each game has their title, publisher, rele
 The main files that handle the implementations of the visualizations are streamgraph.js and bargraph.js which are located in the apps folder. Our styling of the slides were handled with HTML
 CSS.
 
-
+Uncut Data Set: https://www.kaggle.com/datasets/gregorut/videogamesales/data
 
 [Video Install Demo](https://youtu.be/3z9Ro5VFom0)
 
