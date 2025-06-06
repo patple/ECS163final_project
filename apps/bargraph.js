@@ -137,7 +137,7 @@ class BarGraph {
             .attr("font-size", "30px")
             .attr("text-anchor", "middle")
             .attr("font-weight","bold")
-            .text(`Stats About Your Choice: ${gameData.Name}`)
+            .text(`Sales for \'${gameData.Name}\'`)
 
         const barGraphInfo = document.getElementById("bar-graph-info")
         barGraphInfo.style.display = "block"
